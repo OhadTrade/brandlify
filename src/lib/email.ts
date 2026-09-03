@@ -13,7 +13,17 @@ import { contact, site } from '@/lib/site';
  * still answers the visitor with success.
  */
 
-const FROM = `Brandlify <no-reply@${new URL(site.url).hostname.replace(/^www\./, '')}>`;
+/**
+ * Sender address. Derived from the site's own hostname by default, which is
+ * right once the site lives on its real domain — but Resend will only send
+ * from a domain that has been verified in the dashboard, and a *.vercel.app
+ * hostname can never be. RESEND_FROM overrides it so the notification works
+ * before the domain is connected (Resend's own `onboarding@resend.dev` is a
+ * valid stopgap: it delivers only to the account owner's address).
+ */
+const FROM =
+  process.env.RESEND_FROM ??
+  `Brandlify <no-reply@${new URL(site.url).hostname.replace(/^www\./, '')}>`;
 
 function client() {
   const key = process.env.RESEND_API_KEY;
