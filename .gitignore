@@ -24,3 +24,7 @@ next-env.d.ts
 
 # build output from `npm run verify`
 .next-verify/
+
+.vercel
+.env*
+!.env.example
