@@ -1,0 +1,21 @@
+/** Sampled from the artwork by scripts/sample-facet-colours.mjs. */
+export const FACET_COLOURS: Record<string, { base: string; light: string; dark: string }> = {
+  '0-0-UR': { base: '#945fc4', light: '#a876d7', dark: '#6b40a1' },
+  '0-1-UR': { base: '#d94bc3', light: '#f97bec', dark: '#9b1a7a' },
+  '0-1-LL': { base: '#c342b9', light: '#f977f2', dark: '#730f63' },
+  '0-2-LL': { base: '#e683dc', light: '#fbb0fa', dark: '#c13ea4' },
+  '1-0-UR': { base: '#a85bd8', light: '#b277e7', dark: '#8e33b1' },
+  '1-0-LL': { base: '#9d5cd4', light: '#ac7be8', dark: '#7a3ab0' },
+  '1-1-UR': { base: '#8c3a91', light: '#c36ece', dark: '#480944' },
+  '1-1-LL': { base: '#7d3f8d', light: '#bd72cd', dark: '#3b104d' },
+  '1-2-UL': { base: '#a0248c', light: '#cd36b6', dark: '#58104c' },
+  '2-0-UR': { base: '#544095', light: '#8065ca', dark: '#1e1450' },
+  '2-0-LL': { base: '#3f3679', light: '#5c5297', dark: '#29205e' },
+  '2-1-UR': { base: '#582d84', light: '#694595', dark: '#3d165d' },
+  '2-1-LL': { base: '#362c5c', light: '#554a78', dark: '#1f1645' },
+  '2-2-LL': { base: '#941aa9', light: '#c528cd', dark: '#560e73' },
+  '3-0-UL': { base: '#271d50', light: '#342867', dark: '#181236' },
+  '3-1-UR': { base: '#3c2679', light: '#5b3b9b', dark: '#26165d' },
+  '3-1-LL': { base: '#362b6a', light: '#504584', dark: '#241a57' },
+  '3-2-UL': { base: '#5b1682', light: '#7c22a3', dark: '#390e5b' },
+};

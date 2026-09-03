@@ -1,0 +1,337 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   Brandlify design tokens
+   Palette sampled from the logo artwork. Magenta is the ENERGY colour —
+   actions, highlights, accents. It is never a large surface.
+   Contrast is verified by `npm run contrast` (WCAG 2.1 AA / IS 5568).
+   ========================================================================== */
+
+@theme {
+  /* --- brand ------------------------------------------------------------ */
+  --color-indigo-deep: #270c67;
+  --color-violet-deep: #5213b0;
+  --color-violet: #832ff0; /* primary */
+  --color-magenta: #e635f0; /* accent / energy */
+  --color-magenta-deep: #c90cad;
+  --color-pink: #f884ec; /* highlights */
+
+  /* --- surfaces --------------------------------------------------------- */
+  --color-base: #08060e;
+  --color-surface: #100c18;
+  --color-elevated: #171021;
+  --color-line: rgb(250 250 252 / 0.08);
+  --color-line-strong: rgb(250 250 252 / 0.16);
+
+  /* --- text ------------------------------------------------------------- */
+  --color-fg: #f5f3f8;
+  --color-muted: #9a94ac; /* 6.81:1 on --color-surface */
+
+  /* --- type ------------------------------------------------------------- */
+  --font-heading: var(--font-heebo), system-ui, sans-serif;
+  --font-body: var(--font-assistant), system-ui, sans-serif;
+  /* Latin only: BUILD·BRAND·GROW, technical labels, oversized numerals.
+     Never used for Hebrew — Montserrat has no Hebrew coverage. */
+  --font-latin: var(--font-montserrat), system-ui, sans-serif;
+
+  --text-h1: clamp(2.5rem, 5.6vw, 4.5rem); /* 40 -> 72 */
+  --text-h1--line-height: 1.04;
+  --text-h1--letter-spacing: -0.02em;
+  --text-h1--font-weight: 800;
+
+  --text-h2: clamp(1.875rem, 3.8vw, 3rem); /* 30 -> 48 */
+  --text-h2--line-height: 1.12;
+  --text-h2--letter-spacing: -0.015em;
+  --text-h2--font-weight: 800;
+
+  --text-h3: clamp(1.375rem, 2vw, 1.75rem); /* 22 -> 28 */
+  --text-h3--line-height: 1.25;
+  --text-h3--font-weight: 700;
+
+  --text-body: clamp(1rem, 0.9rem + 0.35vw, 1.125rem); /* 16 -> 18 */
+  --text-body--line-height: 1.7;
+
+  --text-label: 0.75rem; /* 12 */
+  --text-label--line-height: 1.2;
+  --text-label--letter-spacing: 0.05em;
+  --text-label--font-weight: 600;
+
+  /* --- motion ----------------------------------------------------------- */
+  /* Tailwind's default curve is cubic-bezier(0.4, 0, 0.2, 1) — it eases IN as
+     well as out, so it starts slow and delays the exact moment the user is
+     watching. These are the strong curves: 'snap' for anything entering,
+     leaving or responding to a hover, 'glide' for something travelling from one
+     place on screen to another. A hover at 200ms on --ease-snap reads faster
+     than the same hover at 200ms on the default. */
+  --ease-snap: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-glide: cubic-bezier(0.77, 0, 0.175, 1);
+
+  /* --- shape ------------------------------------------------------------ */
+  /* Sharp and engineered — mirrors the 45deg geometry of the mark. */
+  --radius-btn: 4px;
+  --radius-card: 8px;
+  --radius-modal: 12px;
+
+  /* --- depth ------------------------------------------------------------ */
+  /* Diffused and violet-tinted, never pure black. */
+  --shadow-float: 0 24px 64px -16px rgb(39 12 103 / 0.65);
+  --shadow-lift: 0 32px 80px -20px rgb(83 19 176 / 0.55);
+  --shadow-glow-violet: 0 0 40px -8px rgb(131 47 240 / 0.5);
+  --shadow-glow-magenta: 0 0 40px -8px rgb(230 53 240 / 0.45);
+
+  /* --- layout ----------------------------------------------------------- */
+  --container-page: 1280px;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Signature gradient — decorative use: rules, glows, gradient text on dark. */
+  --gradient-brand: linear-gradient(135deg, #832ff0 0%, #e635f0 100%);
+
+  /* Interactive surfaces carrying white text. Deepened from --gradient-brand so
+     white passes AA across the whole ramp (7.57:1 -> 5.07:1); the literal
+     brand gradient only reaches 3.43:1 at its magenta end. */
+  --gradient-cta: linear-gradient(135deg, #6b1fd4 0%, #c90cad 100%);
+
+  /* rem, not px. A user who raises their browser's base text size gets taller
+     nav copy; a fixed-pixel bar would keep its height and crop it. Everything
+     that positions against the header reads this token, so they all scale
+     together. 4.5rem is the same 72px at the default root size. */
+  --nav-height: 4.5rem;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    /* Lenis drives scrolling; never let both run. */
+    scroll-behavior: auto;
+  }
+
+  body {
+    background-color: var(--color-base);
+    color: var(--color-fg);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Visible focus everywhere, on every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--color-magenta);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--color-violet);
+    color: #fff;
+  }
+
+  /* Numbers, phones and e-mails keep LTR order inside Hebrew copy. */
+  [dir='ltr'] {
+    unicode-bidi: isolate;
+  }
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+/* Decorative brand gradient as a background. */
+@utility bg-brand {
+  background-image: var(--gradient-brand);
+}
+
+/* Interactive gradient — safe under white text. */
+@utility bg-cta {
+  background-image: var(--gradient-cta);
+}
+
+/* Gradient text. Falls back to solid pink for forced-colors / no background-clip. */
+@utility text-brand-gradient {
+  background-image: var(--gradient-brand);
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 45deg chamfer, echoing how the B is built. */
+@utility chamfer {
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+}
+
+/* Floating glass surface. */
+@utility glass {
+  background-color: rgb(23 16 33 / 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+}
+
+/* Vertical rhythm between major sections: 80px mobile, 160px desktop. */
+@utility section-y {
+  padding-block: 5rem;
+  @media (width >= 48rem) {
+    padding-block: 10rem;
+  }
+}
+
+@utility hide-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Above-the-fold reveal safety net
+   ==========================================================================
+   A heading that plays a masked reveal has to start hidden, and it is hidden
+   here rather than by script so there is no flash between paint and hydration.
+   Three things make that safe:
+
+   1. The rule only applies when motion is allowed, so a reduced-motion visitor
+      never has anything hidden from them.
+   2. It stops applying the moment the animation engine loads, which sets
+      data-motion="ready" on <html>.
+   3. If the engine never loads at all — script blocked, chunk failed, JS off —
+      the keyframe fades the heading in anyway after 900ms. Nothing on this site
+      can leave content permanently invisible waiting for JavaScript.
+   ========================================================================== */
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-motion='ready']) [data-reveal='pending'] {
+    opacity: 0;
+    animation: reveal-safety 0.4s 0.9s ease-out forwards;
+  }
+}
+
+@keyframes reveal-safety {
+  to {
+    opacity: 1;
+  }
+}
+
+/* 404: the facets drift apart. The transform set inline is the scatter; this
+   only adds a slow float on top of it, and the global reduced-motion block
+   below freezes it. */
+@media (prefers-reduced-motion: no-preference) {
+  .broken-facet {
+    animation: broken-drift 7s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes broken-drift {
+  to {
+    translate: 0 -0.12px;
+    opacity: 0.75;
+  }
+}
+
+/* ==========================================================================
+   Reduced motion — a hard off switch, not a nicety (IS 5568 / WCAG 2.3.3).
+   The animation engine also reads this flag and skips building timelines;
+   this block is the belt-and-braces layer for anything CSS-driven.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   Arrival
+   For the rare, high-emotion swap — the contact form replaced by "we got it".
+   Everything else on this site is occasional or constant motion and stays
+   subdued; this is the one place the delight budget is allowed to be spent,
+   and it is still only 260ms.
+
+   Starts at 0.97, never at 0: nothing in the real world appears from nothing,
+   and a scale that starts at zero reads as a glitch rather than an entrance.
+   ========================================================================== */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (transition-behavior: allow-discrete) {
+    .arrive {
+      opacity: 1;
+      scale: 1;
+      transition:
+        opacity 260ms var(--ease-snap),
+        scale 260ms var(--ease-snap);
+
+      @starting-style {
+        opacity: 0;
+        scale: 0.97;
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   Translucency and contrast preferences
+
+   The site has exactly two translucent surfaces — the header and the .glass
+   chips — and both are the kind of "floating material" that reads as depth to
+   most people and as noise to some. These are the two preferences almost
+   nobody implements, and both are one media query each.
+
+   prefers-reduced-transparency is not a motion setting: it is set by people who
+   find layered translucency hard to parse, and by anyone running a device where
+   the blur costs real frames. The right answer is a solid surface, not a
+   fainter one — a half-measure keeps the parsing cost and loses the effect.
+
+   prefers-contrast: more wants defined edges, so the hairlines go from 8% to a
+   border you can actually see, and muted text stops being muted.
+   ========================================================================== */
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  [data-chrome] {
+    background-color: var(--color-elevated);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  [data-chrome] {
+    background-color: var(--color-base);
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --color-line: rgb(250 250 252 / 0.3);
+    --color-line-strong: rgb(250 250 252 / 0.5);
+    /* 6.81:1 on --color-surface is comfortable; this takes it past 9:1. */
+    --color-muted: #c9c4d6;
+  }
+
+  .glass,
+  [data-chrome] {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background-color: var(--color-base);
+  }
+}
