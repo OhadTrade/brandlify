@@ -1,3 +1,4 @@
+import { MarkStage } from '@/components/hero/MarkStage';
 import { Automations } from '@/components/sections/Automations';
 import { BuildBrandGrow } from '@/components/sections/BuildBrandGrow';
 import { Faq } from '@/components/sections/Faq';
@@ -22,9 +23,19 @@ export const revalidate = 300;
 export default function Home() {
   return (
     <>
-      <Hero />
-      <StatsBar />
-      <ServicesGrid />
+      {/*
+        The mark is held across these three sections rather than dying with the
+        hero: one subject, re-framed by scroll, which is the part of a WebGL
+        scroll piece that survives being done inside a real document. The stage
+        ends here on purpose - past the services grid the page has its own
+        subjects and a mark still hanging behind them is set dressing.
+      */}
+      <MarkStage>
+        <Hero />
+        <StatsBar />
+        <ServicesGrid />
+      </MarkStage>
+
       <Split />
       <BuildBrandGrow />
       <Portfolio />

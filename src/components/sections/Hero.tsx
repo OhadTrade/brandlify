@@ -1,5 +1,5 @@
 import { HeroScrollFade } from '@/components/hero/HeroScrollFade';
-import { HeroVisual } from '@/components/hero/HeroVisual';
+import { MarkStill } from '@/components/hero/MarkStill';
 import { TextReveal } from '@/components/motion/TextReveal';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
@@ -38,36 +38,27 @@ export async function Hero() {
       className="hero-diagonal relative -mt-(--nav-height) flex min-h-svh flex-col justify-center overflow-hidden"
     >
       {/*
-        The mark.
+        The mark, mobile only.
 
-        On desktop it fills the section and sits off to the end side, clear of
-        the copy. On mobile there is no "off to the side": the column is the
-        whole screen, so the mark was directly underneath the headline. Dropping
-        it to 40% opacity was the old answer and it did not work - a grid of
-        hard-edged triangles behind Hebrew display type is noise at any opacity,
-        and the mark itself became an unreadable fragment, cropped by the pill
-        above it and the buttons below.
+        On desktop it is no longer the hero's to own: it lives on the sticky
+        stage that spans this section and the two after it, so it survives the
+        hero instead of dying with it. Below the breakpoint there is no stage,
+        no canvas and no scroll re-framing, so the hero keeps its own band with
+        the still image in it.
 
-        So on mobile the section becomes a column with a band of fixed height
-        for the mark and the copy stacked under it. Two earlier attempts are
-        worth recording. A 50/50 split broke on a 375x667 phone, where the copy
-        alone is taller than half the viewport and grew back up into the mark.
-        Giving the band `flex-1` and the image `max-h-full` looked right but was
-        not: a percentage max-height against a flex item that is sized by
-        flex-grow does not reliably constrain, so the image kept its intrinsic
-        height and pushed the second button off the bottom of the screen. A
-        definite height is the version that actually holds, because every
-        percentage below it then has something real to resolve against.
-
-        On desktop the block leaves the flow entirely and goes back to filling
-        the section behind the copy, which is where it belongs when there is
-        room to put the two side by side.
+        Two earlier attempts are worth recording. A fixed 50/50 split broke at
+        375x667, where the copy alone is taller than half the viewport and grew
+        back up into the mark. Giving the band `flex-1` and the image
+        `max-h-full` looked correct but is not: a percentage max-height against
+        a flex item sized by flex-grow does not reliably constrain, so the image
+        kept its intrinsic height and pushed the second button off the bottom of
+        the screen. A definite height is the version that holds.
       */}
       <div
-        className="hero-diagonal-mark relative h-[42svh] w-full shrink-0 pt-(--nav-height) pb-3 lg:absolute lg:inset-0 lg:h-auto lg:p-0"
+        className="relative h-[42svh] w-full shrink-0 pt-(--nav-height) pb-3 lg:hidden"
         aria-hidden
       >
-        <HeroVisual variant="backdrop" />
+        <MarkStill />
       </div>
 
       {/*

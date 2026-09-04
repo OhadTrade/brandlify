@@ -241,14 +241,16 @@
    whole idea: the mark is eighteen right triangles on a 45deg grid, so the
    angle is the one thing about this brand that cannot be borrowed.
 
-   Both the mask and the hairline are driven from the same two custom
-   properties, so they cannot drift apart.
+   Why a gradient and not a clip-path polygon: `linear-gradient(135deg)` is a
+   true 135deg in CSS, measured as an angle, so the edge it produces is exactly
+   45deg at every viewport size. A polygon would need its points recomputed
+   against the aspect ratio to stay at 45deg, and would silently become 38deg
+   on a wide monitor.
 
-   Why a masked gradient and not a clip-path polygon: `linear-gradient(135deg)`
-   is a true 135deg in CSS, measured as an angle, so the edge it produces is
-   exactly 45deg at every viewport size. A polygon would need its points
-   recomputed against the aspect ratio to stay at 45deg, and would silently
-   become 38deg on a wide monitor.
+   There used to be a matching mask on the mark's container, cutting it along
+   the same line. It went when the mark moved to the sticky stage: the mask was
+   only ever clipping that container's own glow, never the mark itself, which
+   never reached the seam.
 
    Desktop only. Below 1024px the mark has its own band above the copy and
    there is no diagonal to draw.
@@ -265,19 +267,6 @@
     */
     --seam-angle: 135deg;
     --seam-at: 56%;
-  }
-
-  .hero-diagonal-mark {
-    -webkit-mask-image: linear-gradient(
-      var(--seam-angle),
-      #000 var(--seam-at),
-      transparent var(--seam-at)
-    );
-    mask-image: linear-gradient(
-      var(--seam-angle),
-      #000 var(--seam-at),
-      transparent var(--seam-at)
-    );
   }
 
   /*

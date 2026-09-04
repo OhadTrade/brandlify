@@ -33,7 +33,10 @@ export async function StatsBar() {
 
   return (
     /*
-     * Pulled up over the hero's foot rather than butted against it.
+     * Pulled up over the hero's foot rather than butted against it, and
+     * translucent rather than solid: the mark is on a sticky layer behind this
+     * band now, and a solid surface would have hidden the middle third of the
+     * move it makes.
      *
      * The hero's vignette already fades its bottom to near-black, and this band
      * is a lighter surface with a rule on top of it, so the two met as a hard
@@ -43,7 +46,7 @@ export async function StatsBar() {
      * the hero in paint order despite the negative margin.
      */
     <section
-      className="border-line bg-surface relative -mt-10 border-b md:-mt-14"
+      className="border-line relative -mt-10 border-b bg-[rgb(23_16_33/0.72)] backdrop-blur-[2px] md:-mt-14"
       aria-label="ההתחייבויות שלנו"
       /*
        * Removing the top rule was not enough on its own: the band's surface is

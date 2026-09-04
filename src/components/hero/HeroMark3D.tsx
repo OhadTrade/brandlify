@@ -197,6 +197,72 @@ function Facet({
   );
 }
 
+/**
+ * Where the mark sits at each point of the stage.
+ *
+ * Three views of one object, in world units. x is negative toward the end side
+ * of the screen, which in Hebrew is the left, so the mark starts opposite the
+ * copy and crosses behind it as the page advances.
+ *
+ * `at` values are scroll progress over the whole stage, not over one section.
+ */
+type Pose = {
+  at: number;
+  x: number;
+  y: number;
+  z: number;
+  rotY: number;
+  rotX: number;
+  scale: number;
+  opacity: number;
+};
+
+const POSES: Pose[] = [
+  // The hero. Held a third of a radian round so the chamfers catch the key and
+  // the silhouette has a visible thickness.
+  { at: 0, x: -1.9, y: 0, z: 0, rotY: -0.34, rotX: 0.12, scale: 0.8, opacity: 1 },
+  // Turning through face-on as the commitments band passes. This is the only
+  // frame where the B is legible as a letter rather than as an object.
+  { at: 0.4, x: -1.05, y: 0.1, z: -1.6, rotY: 0.05, rotX: 0.04, scale: 0.56, opacity: 0.34 },
+  /*
+   * Pushed off to the end edge behind the services grid, and nearly gone.
+   *
+   * The first attempt drifted it to centre here at a third opacity, which put
+   * a large translucent object directly across the section heading. It read as
+   * a mistake rather than as depth: text over a busy shape is unreadable at any
+   * opacity, which is the same lesson the mobile hero taught. Sending it to the
+   * edge instead lets it survive in the gutters between the cards, where it is
+   * atmosphere and nothing has to be read through it.
+   */
+  { at: 1, x: -3.1, y: -0.5, z: -3.6, rotY: 0.75, rotX: -0.09, scale: 0.42, opacity: 0.1 },
+];
+
+const clamp01 = (n: number) => (n < 0 ? 0 : n > 1 ? 1 : n);
+
+/** Linear blend between the two poses bracketing `p`. */
+function poseAt(p: number): Omit<Pose, 'at'> {
+  let i = 0;
+  while (i < POSES.length - 2 && p > POSES[i + 1]!.at) i += 1;
+  const a = POSES[i]!;
+  const b = POSES[i + 1]!;
+  const span = b.at - a.at || 1;
+  // Smoothstep rather than linear. A linear blend between keyframes changes
+  // direction abruptly at each one, and on a scrubbed timeline that corner is
+  // visible as a flick.
+  const raw = clamp01((p - a.at) / span);
+  const k = raw * raw * (3 - 2 * raw);
+  const mix = (u: number, v: number) => u + (v - u) * k;
+  return {
+    x: mix(a.x, b.x),
+    y: mix(a.y, b.y),
+    z: mix(a.z, b.z),
+    rotY: mix(a.rotY, b.rotY),
+    rotX: mix(a.rotX, b.rotX),
+    scale: mix(a.scale, b.scale),
+    opacity: mix(a.opacity, b.opacity),
+  };
+}
+
 /** The mark: rotates gently, leans toward the pointer, recedes as you scroll. */
 function Mark({ progress }: { progress: React.RefObject<number> }) {
   const group = useRef<THREE.Group>(null);
@@ -246,40 +312,40 @@ function Mark({ progress }: { progress: React.RefObject<number> }) {
 
   const MAX_TILT = THREE.MathUtils.degToRad(12); // §6.2: +/-12 degrees
 
-  /**
-   * Base size of the mark.
-   *
-   * Lives here rather than on the <group scale> prop because useFrame writes
-   * scale every frame for the scroll shrink — a JSX scale would be silently
-   * overwritten on the first frame, which is exactly what was happening: the
-   * prop said 0.62 and the mark rendered at 1.
-   */
-  const BASE_SCALE = 0.8;
-
   useFrame((state, delta) => {
     const g = group.current;
     if (!g) return;
     const t = progress.current ?? 0;
 
     /*
-     * Resting pose, then idle sway, then pointer lean, then the scroll turn.
+     * The pose, keyframed across the stage.
      *
-     * The rest offsets are the important part and they were missing. The
-     * <group> carries a rotation prop, but this callback writes rotation.x and
-     * rotation.y every frame, so that prop was overwritten on frame one -
-     * exactly the trap the scale comment above describes. The mark was
-     * therefore resting at dead-on zero and swaying symmetrically around it,
-     * which is the one angle where an extruded plate shows none of its depth:
-     * no side wall at the silhouette, and every chamfer at the same angle to
-     * the camera. Holding it a third of a radian round and a little tipped
-     * puts the end-side chamfers into the key and gives the silhouette a
-     * visible thickness, which is the whole reason for building it in 3D.
+     * The mark no longer belongs to the hero. It is held on a sticky layer that
+     * spans several sections, and scrolling re-frames it rather than dismissing
+     * it: one subject, three views. That is the single idea worth taking from
+     * the scroll pieces people call unique, and it is the part that survives
+     * being done inside a real document with real headings.
+     *
+     * Read as a camera move even though the camera never moves. Turning and
+     * pushing the object is cheaper than flying a camera, and it keeps the
+     * light rig fixed, so the specular streaks sweep across the facets as it
+     * goes - which is the thing that reads as travel.
+     *
+     * The last pose is deliberately faint and small. By then the services grid
+     * is the subject and the mark is the room it happens in; a mark still
+     * demanding attention behind live copy is a background that has not
+     * accepted its job.
      */
-    const REST_Y = -0.34;
-    const REST_X = 0.12;
+    const p = clamp01(t);
+    const pose = poseAt(p);
+
+    // Idle motion and pointer lean, both damped away as the stage advances.
+    // A mark that is still bobbing while it recedes reads as two animations
+    // fighting rather than one move.
+    const rest = 1 - p;
     const spin = state.clock.elapsedTime * 0.18;
-    const targetY = REST_Y + Math.sin(spin) * 0.22 + pointer.current.x * MAX_TILT + t * 1.4;
-    const targetX = REST_X - pointer.current.y * MAX_TILT + t * 0.5;
+    const targetY = pose.rotY + (Math.sin(spin) * 0.22 + pointer.current.x * MAX_TILT) * rest;
+    const targetX = pose.rotX - pointer.current.y * MAX_TILT * rest;
 
     // Frame-rate independent easing.
     const ease = 1 - Math.pow(0.001, delta);
@@ -287,33 +353,24 @@ function Mark({ progress }: { progress: React.RefObject<number> }) {
     g.rotation.x += (targetX - g.rotation.x) * ease;
 
     /*
-     * Idle float.
-     *
-     * At rest the only motion was the yaw, which reads as a turntable: an
-     * object bolted to a plinth and spun. A slow vertical drift on a different
-     * period, plus a barely-there roll, reads as something suspended instead.
-     * Both are damped by (1 - t) so the mark is not still bobbing while it
-     * recedes; the scroll takes over cleanly.
-     *
-     * The periods are deliberately not multiples of each other. Matched
-     * periods produce a visible repeating loop; these two drift in and out of
-     * phase over about half a minute, which is long enough that nobody sees
-     * the pattern restart.
+     * Idle float. The periods are deliberately not multiples of each other:
+     * matched periods produce a visible repeating loop, and these two drift in
+     * and out of phase over about half a minute.
      */
-    const rest = 1 - t;
-    g.position.y = Math.sin(state.clock.elapsedTime * 0.55) * 0.075 * rest;
     g.rotation.z = Math.sin(state.clock.elapsedTime * 0.37) * 0.035 * rest;
 
-    // Recede in Z and fade out as the hero scrolls away.
-    g.position.z = -t * 7;
-    g.scale.setScalar(BASE_SCALE * (1 - t * 0.25));
+    g.position.x += (pose.x - g.position.x) * ease;
+    g.position.y +=
+      (pose.y + Math.sin(state.clock.elapsedTime * 0.55) * 0.075 * rest - g.position.y) * ease;
+    g.position.z += (pose.z - g.position.z) * ease;
+    g.scale.setScalar(pose.scale);
 
-    const opacity = 1 - t;
+    const opacity = pose.opacity;
     g.traverse((child) => {
       const mesh = child as THREE.Mesh;
       const material = mesh.material as THREE.Material | undefined;
       if (material && 'opacity' in material) {
-        material.transparent = t > 0.001;
+        material.transparent = opacity < 0.999;
         material.opacity = opacity;
       }
     });
