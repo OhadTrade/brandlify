@@ -89,7 +89,13 @@ async function Promises() {
   const promises = await getContent("home.promises");
 
   return (
+    // The attribute has to be on this branch too. SocialProof renders one of two
+    // sections and the testimonials table is empty, so this is the one that is
+    // actually on the page - it was the only section on the whole page without
+    // an arrival, which is exactly the kind of gap a count catches and reading
+    // the code does not.
     <section
+      data-flow="lift"
       className="section-y bg-surface border-line border-y"
       aria-labelledby="promises-heading"
     >
