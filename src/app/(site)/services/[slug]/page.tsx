@@ -71,7 +71,23 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         <section className="section-y" aria-labelledby="what-heading">
           <Container className="grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:gap-16">
             <SectionHeading eyebrow="What it is" id="what-heading" title="מה זה בעצם" />
-            <p className="text-muted text-[1.0625rem] leading-relaxed">{service.full_content}</p>
+            {/*
+              Paragraphs, not one block. The copy grew from a single sentence
+              into a real explanation, and a wall of eight lines with no breaks
+              is the fastest way to make sure nobody reads it. Blank lines in
+              the stored text are the paragraph breaks.
+            */}
+            <div className="flex flex-col gap-4">
+              {service.full_content
+                .split(/\n\s*\n/)
+                .map((paragraph) => paragraph.trim())
+                .filter(Boolean)
+                .map((paragraph) => (
+                  <p key={paragraph} className="text-muted text-[1.0625rem] leading-relaxed">
+                    {paragraph}
+                  </p>
+                ))}
+            </div>
           </Container>
         </section>
       ) : null}
