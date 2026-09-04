@@ -64,7 +64,7 @@ export async function StatsBar() {
                   {figure.kind === 'range' ? (
                     <>
                       <CountingNumber target={figure.from} startOnView transition={transition} />
-                      <span className="text-muted mx-0.5">–</span>
+                      <span className="text-muted mx-0.5">-</span>
                       <CountingNumber target={figure.to} startOnView transition={transition} />
                     </>
                   ) : null}

@@ -49,7 +49,7 @@ export async function Portfolio() {
                   {project.cover_image ? (
                     <Image
                       src={project.cover_image}
-                      alt={`${project.business_name} — ${project.category}`}
+                      alt={`${project.business_name}: ${project.category}`}
                       fill
                       sizes={featured ? '(min-width: 1280px) 1232px, 100vw' : '(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw'}
                       className="object-cover transition-transform duration-400 ease-snap group-hover:scale-[1.04] motion-reduce:transform-none motion-reduce:transition-none"

@@ -89,7 +89,7 @@ export async function BuildBrandGrow() {
           className="relative"
           trackClassName="mx-auto grid max-w-sm gap-6 lg:mx-0 lg:flex lg:w-max lg:max-w-none lg:gap-6 lg:pe-[12vw] lg:will-change-transform"
         >
-          {data.stages.map((stage, i) => (
+          {data.stages.map((stage) => (
             <li
               key={stage.key}
               data-stage
@@ -127,10 +127,12 @@ export async function BuildBrandGrow() {
                       <Icon name={STAGE_ICONS[stage.key] ?? 'layers'} className="size-6" />
                     </CardDecorator>
 
+                    {/* The stage name only. It used to carry an "01 ·" prefix;
+                        the cards are already in order and already numbered by
+                        their position on the track, so the counter was
+                        decoration that made every card read the same. */}
                     <p className="font-latin text-muted text-label mt-5 uppercase">
-                      <span dir="ltr">
-                        {String(i + 1).padStart(2, '0')} · {stage.key}
-                      </span>
+                      <span dir="ltr">{stage.key}</span>
                     </p>
 
                     <CardTitle className="mt-1">{stage.title}</CardTitle>

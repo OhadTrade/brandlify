@@ -17,7 +17,7 @@ export async function ServicesGrid() {
           eyebrow="What we do"
           id="services-heading"
           title="חמישה שירותים, ספק אחד."
-          subtitle="במקום לתאם בין מעצב, מפתח ומשווק — הכול יושב במקום אחד, ומדבר אותה שפה."
+          subtitle="במקום לתאם בין מעצב, מפתח ומשווק. הכול יושב במקום אחד, ומדבר אותה שפה."
         />
 
         <Reveal as="ul" className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
