@@ -1,8 +1,8 @@
-import { Reveal } from "@/components/motion/Reveal";
-import { Container } from "@/components/ui/Container";
-import { Icon } from "@/components/ui/Icon";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { getApprovedTestimonials, getContent } from "@/lib/queries";
+import { Reveal } from '@/components/motion/Reveal';
+import { Container } from '@/components/ui/Container';
+import { Icon } from '@/components/ui/Icon';
+import { SectionHeading } from '@/components/ui/SectionHeading';
+import { getApprovedTestimonials, getContent } from '@/lib/queries';
 
 /**
  * Reviews, or — while there are none — the written commitments.
@@ -19,10 +19,7 @@ export async function SocialProof() {
 
   return (
     <section
-      data-flow="lift"
-      className="section-y bg-surface border-line border-y"
-      aria-labelledby="reviews-heading"
-    >
+      data-flow="lift" className="section-y bg-surface border-line border-y" aria-labelledby="reviews-heading">
       <Container className="flex flex-col gap-12">
         <SectionHeading
           eyebrow="Reviews"
@@ -37,17 +34,12 @@ export async function SocialProof() {
               className="border-line bg-elevated rounded-card flex flex-col gap-5 border p-7"
             >
               {t.rating ? (
-                <p
-                  className="flex gap-0.5"
-                  aria-label={`דירוג ${t.rating} מתוך 5`}
-                >
+                <p className="flex gap-0.5" aria-label={`דירוג ${t.rating} מתוך 5`}>
                   {Array.from({ length: 5 }, (_, i) => (
                     <span
                       key={i}
                       aria-hidden
-                      className={
-                        i < t.rating! ? "text-magenta" : "text-muted opacity-30"
-                      }
+                      className={i < t.rating! ? 'text-magenta' : 'text-muted opacity-30'}
                     >
                       ★
                     </span>
@@ -67,13 +59,9 @@ export async function SocialProof() {
                   {t.client_name.trim().charAt(0)}
                 </span>
                 <span>
-                  <span className="text-fg block text-sm font-semibold">
-                    {t.client_name}
-                  </span>
+                  <span className="text-fg block text-sm font-semibold">{t.client_name}</span>
                   {t.business_name ? (
-                    <span className="text-muted block text-xs">
-                      {t.business_name}
-                    </span>
+                    <span className="text-muted block text-xs">{t.business_name}</span>
                   ) : null}
                 </span>
               </footer>
@@ -86,14 +74,9 @@ export async function SocialProof() {
 }
 
 async function Promises() {
-  const promises = await getContent("home.promises");
+  const promises = await getContent('home.promises');
 
   return (
-    // The attribute has to be on this branch too. SocialProof renders one of two
-    // sections and the testimonials table is empty, so this is the one that is
-    // actually on the page - it was the only section on the whole page without
-    // an arrival, which is exactly the kind of gap a count catches and reading
-    // the code does not.
     <section
       data-flow="lift"
       className="section-y bg-surface border-line border-y"
@@ -120,9 +103,7 @@ async function Promises() {
                 <Icon name="check" className="h-5 w-5" strokeWidth={2.5} />
               </span>
               <span className="flex flex-col gap-1.5">
-                <span className="text-fg text-lg font-extrabold">
-                  {item.title}
-                </span>
+                <span className="text-fg text-lg font-extrabold">{item.title}</span>
                 <span className="text-muted text-[0.9375rem] leading-relaxed">
                   {item.description}
                 </span>

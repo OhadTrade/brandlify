@@ -183,6 +183,86 @@ export function sectionFlow(
 }
 
 // -----------------------------------------------------------------------------
+// scrubItems — a group arrives one by one, tied to the scroll
+// -----------------------------------------------------------------------------
+
+/**
+ * Scrubbed, staggered arrival for the items inside a section.
+ *
+ * `fadeUp` plays a group in once, at a fixed speed, the moment a line is
+ * crossed. The result reads as a canned intro: it looks the same whether the
+ * reader eased in or threw the page, and it is over before they have arrived.
+ * Here the stagger runs along the scroll itself, so the figures or the cards
+ * land one after another at whatever pace the reader is moving, and reverse if
+ * they scroll back.
+ *
+ * Scale is in this because opacity and offset alone read as a slide. Coming up
+ * from 0.94 makes each item look like it is settling into the page rather than
+ * sliding onto it - the same reason a photograph that grows slightly as it
+ * enters feels present and one that only fades feels printed.
+ *
+ * `exit` is off by default. Most sections that use this already have
+ * `sectionFlow` on the section itself, and two departures multiply: a section
+ * at 0.32 holding items at 0.35 is 0.11, which is not depth, it is a bug.
+ * Turn it on only for a section that has no flow of its own.
+ */
+export function scrubItems(
+  mm: MatchMedia,
+  root: Element,
+  targets: Targets,
+  {
+    y = 34,
+    scale = 0.94,
+    stagger = 0.09,
+    exit = false,
+    start = 'top 92%',
+    end = 'bottom 30%',
+  }: {
+    y?: number;
+    scale?: number;
+    stagger?: number;
+    exit?: boolean;
+    start?: string;
+    end?: string;
+  } = {},
+) {
+  mm.add(MQ.motionOk, () => {
+    const els = gsap.utils.toArray<HTMLElement>(targets);
+    if (els.length === 0) return;
+
+    const tl = gsap.timeline({
+      scrollTrigger: { trigger: root, start, end, scrub: 0.6 },
+    });
+
+    tl.fromTo(
+      els,
+      { opacity: 0, y, scale, force3D: true },
+      {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        ease: 'none',
+        // `each` rather than `amount`: the gap between items stays constant as
+        // the group grows, so four figures and five cards feel like the same
+        // cadence instead of the larger group racing to fit the same window.
+        stagger: { each: stagger },
+        duration: exit ? 0.46 : 1,
+      },
+    );
+
+    if (exit) {
+      tl.to(els, { duration: 0.3 }).to(els, {
+        opacity: 0.3,
+        y: -20,
+        ease: 'none',
+        stagger: { each: stagger * 0.6 },
+        duration: 0.24,
+      });
+    }
+  });
+}
+
+// -----------------------------------------------------------------------------
 // textReveal — masked line/character reveal
 // -----------------------------------------------------------------------------
 

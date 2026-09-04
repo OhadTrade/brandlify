@@ -1,15 +1,15 @@
-import Image from "next/image";
-import Link from "next/link";
-import { Button } from "@/components/ui/Button";
-import { Container } from "@/components/ui/Container";
-import { Icon } from "@/components/ui/Icon";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { getPublishedPosts } from "@/lib/queries";
+import Image from 'next/image';
+import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
+import { Container } from '@/components/ui/Container';
+import { Icon } from '@/components/ui/Icon';
+import { SectionHeading } from '@/components/ui/SectionHeading';
+import { getPublishedPosts } from '@/lib/queries';
 
-const dateFormatter = new Intl.DateTimeFormat("he-IL", {
-  day: "numeric",
-  month: "long",
-  year: "numeric",
+const dateFormatter = new Intl.DateTimeFormat('he-IL', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
 });
 
 /** Hidden entirely until there are published posts. */
@@ -19,10 +19,7 @@ export async function LatestPosts() {
 
   return (
     <section
-      data-flow="lift"
-      className="section-y"
-      aria-labelledby="blog-heading"
-    >
+      data-flow="lift" className="section-y" aria-labelledby="blog-heading">
       <Container className="flex flex-col gap-12">
         <SectionHeading
           eyebrow="From the blog"
@@ -59,10 +56,7 @@ export async function LatestPosts() {
                       </span>
                     ) : null}
                     {post.published_at ? (
-                      <time
-                        dateTime={post.published_at}
-                        className="text-muted normal-case"
-                      >
+                      <time dateTime={post.published_at} className="text-muted normal-case">
                         {dateFormatter.format(new Date(post.published_at))}
                       </time>
                     ) : null}

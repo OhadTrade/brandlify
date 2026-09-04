@@ -1,10 +1,10 @@
-import { Reveal } from "@/components/motion/Reveal";
-import Link from "next/link";
-import { Button } from "@/components/ui/Button";
-import { Container } from "@/components/ui/Container";
-import { Icon } from "@/components/ui/Icon";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { getServices } from "@/lib/queries";
+import { ScrubGroup } from '@/components/motion/ScrubGroup';
+import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
+import { Container } from '@/components/ui/Container';
+import { Icon } from '@/components/ui/Icon';
+import { SectionHeading } from '@/components/ui/SectionHeading';
+import { getServices } from '@/lib/queries';
 
 export async function ServicesGrid() {
   const services = await getServices();
@@ -12,10 +12,7 @@ export async function ServicesGrid() {
 
   return (
     <section
-      data-flow="lift"
-      className="section-y"
-      aria-labelledby="services-heading"
-    >
+      data-flow="lift" className="section-y" aria-labelledby="services-heading">
       <Container className="flex flex-col gap-12">
         <SectionHeading
           eyebrow="What we do"
@@ -24,7 +21,11 @@ export async function ServicesGrid() {
           subtitle="במקום לתאם בין מעצב, מפתח ומשווק. הכול יושב במקום אחד, ומדבר אותה שפה."
         />
 
-        <Reveal as="ul" className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {/*
+          No `exit`: this section already carries data-flow="lift", and two
+          departures multiply into something far darker than either intends.
+        */}
+        <ScrubGroup as="ul" className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (
             <li key={service.slug} className="group">
               <Link
@@ -41,7 +42,7 @@ export async function ServicesGrid() {
                   aria-hidden
                   className="border-line chamfer text-violet group-hover:text-magenta flex h-12 w-12 items-center justify-center border bg-[rgb(131_47_240/0.08)] transition-colors duration-300"
                 >
-                  <Icon name={service.icon ?? "globe"} className="h-6 w-6" />
+                  <Icon name={service.icon ?? 'globe'} className="h-6 w-6" />
                 </span>
 
                 <h3 className="text-h3 text-fg">{service.title}</h3>
@@ -51,15 +52,12 @@ export async function ServicesGrid() {
 
                 <span className="text-pink flex items-center gap-2 text-sm font-semibold">
                   לפרטים
-                  <Icon
-                    name="arrow"
-                    className="h-4 w-4 transition-transform duration-200 ease-snap group-hover:-translate-x-1 motion-reduce:transform-none"
-                  />
+                  <Icon name="arrow" className="h-4 w-4 transition-transform duration-200 ease-snap group-hover:-translate-x-1 motion-reduce:transform-none" />
                 </span>
               </Link>
             </li>
           ))}
-        </Reveal>
+        </ScrubGroup>
 
         <div>
           <Button href="/services" variant="secondary" size="lg">

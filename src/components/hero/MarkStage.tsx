@@ -83,11 +83,11 @@ export function MarkStage({ children }: { children: ReactNode }) {
   /*
    * Scroll progress across the whole stage.
    *
-   * `end: 'bottom bottom'` rather than 'bottom top': progress has to reach 1
-   * at the moment the sticky layer stops sticking, which is when the wrapper's
-   * bottom meets the viewport's bottom. Ending at 'bottom top' would leave the
-   * mark mid-pose for a whole viewport of scrolling after it had visually
-   * detached.
+   * The stage is one viewport tall, so 'bottom bottom' would have given the
+   * whole pose arc about seventy pixels of scroll to play out in - the mark
+   * would have finished its exit before the hero had visibly moved. 'bottom
+   * top' spends the arc over the hero's whole departure, which is what it is
+   * describing.
    *
    * Driven by ScrollTrigger and not by a scroll listener so it stays in step
    * with Lenis, which is animating toward a scroll position that a raw
@@ -104,7 +104,7 @@ export function MarkStage({ children }: { children: ReactNode }) {
       trigger = ScrollTrigger.create({
         trigger: el,
         start: 'top top',
-        end: 'bottom bottom',
+        end: 'bottom top',
         onUpdate: (self) => {
           progress.current = self.progress;
         },
@@ -142,17 +142,22 @@ export function MarkStage({ children }: { children: ReactNode }) {
       */}
       <div
         aria-hidden
-        // Zero height, on purpose.
-        //
-        // A sticky element is still in normal flow and still occupies its own
-        // height, so a `sticky h-svh` layer as the first child pushed every
-        // section below it down by a whole viewport - the hero copy was still
-        // on screen a thousand pixels into the page. Collapsing the sticky box
-        // to nothing and letting its child overflow gives the same stick with
-        // no space taken.
-        className="pointer-events-none sticky top-0 -z-10 hidden h-0 w-full lg:block"
+        /*
+         * Absolute and clipped, not sticky.
+         *
+         * It was sticky while the stage spanned three sections and the mark had
+         * to survive them. Left that way once the stage shrank to the hero it
+         * became a bug with two halves: a sticky box takes its own height in
+         * normal flow, so it had to be collapsed to h-0 with the visual
+         * overflowing downward - and that overflow then painted a viewport tall
+         * strip of mark straight over the commitments band and the services
+         * grid below it. That floating shape behind the figures was this.
+         *
+         * Bounded to the stage and clipped, the mark cannot leave the hero.
+         */
+        className="pointer-events-none absolute inset-0 -z-10 hidden overflow-hidden lg:block"
       >
-        <div className="relative flex h-svh w-full items-center justify-center overflow-hidden">
+        <div className="relative flex h-full w-full items-center justify-center">
           <div
             className="pointer-events-none absolute inset-0 m-auto h-[58%] w-[58%] rounded-full opacity-60 blur-[110px]"
             style={{

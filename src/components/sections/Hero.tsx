@@ -1,10 +1,10 @@
-import { HeroScrollFade } from "@/components/hero/HeroScrollFade";
-import { MarkStill } from "@/components/hero/MarkStill";
-import { TextReveal } from "@/components/motion/TextReveal";
-import { Button } from "@/components/ui/Button";
-import { Container } from "@/components/ui/Container";
-import { Icon } from "@/components/ui/Icon";
-import { getContent } from "@/lib/queries";
+import { HeroScrollFade } from '@/components/hero/HeroScrollFade';
+import { MarkStill } from '@/components/hero/MarkStill';
+import { TextReveal } from '@/components/motion/TextReveal';
+import { Button } from '@/components/ui/Button';
+import { Container } from '@/components/ui/Container';
+import { Icon } from '@/components/ui/Icon';
+import { getContent } from '@/lib/queries';
 
 /**
  * Hero — full-bleed visual with the copy laid over it.
@@ -27,14 +27,16 @@ import { getContent } from "@/lib/queries";
  *     below already carry the story.
  */
 export async function Hero() {
-  const hero = await getContent("home.hero");
-  const [firstLine, ...restLine] = hero.title.split(" שמייצרת ");
+  const hero = await getContent('home.hero');
+  const [firstLine, ...restLine] = hero.title.split(' שמייצרת ');
   const hasSplit = restLine.length > 0;
 
   return (
     // Pulled up under the fixed navbar so the visual runs behind it while it is
     // still transparent.
-    <section className="hero-diagonal relative -mt-(--nav-height) flex min-h-svh flex-col justify-center overflow-hidden">
+    <section
+      className="hero-diagonal relative -mt-(--nav-height) flex min-h-svh flex-col justify-center overflow-hidden"
+    >
       {/*
         The mark, mobile only.
 
@@ -71,10 +73,7 @@ export async function Hero() {
         Desktop only. Below the breakpoint the mark has its own band and there
         is no diagonal to draw.
       */}
-      <div
-        aria-hidden
-        className="hero-diagonal-seam pointer-events-none absolute inset-0"
-      />
+      <div aria-hidden className="hero-diagonal-seam pointer-events-none absolute inset-0" />
 
       {/*
         Vignette. Symmetrical left-to-right on purpose: a CSS gradient does not
@@ -106,27 +105,18 @@ export async function Hero() {
             {/* The only element on the site that starts hidden. It is the LCP
                 element, so the reveal is short and the safety net in globals.css
                 shows it at 900ms regardless of whether the engine arrives. */}
-            <TextReveal
-              as="h1"
-              className="text-h1 text-fg"
-              hideUntilReady
-              duration={0.9}
-            >
+            <TextReveal as="h1" className="text-h1 text-fg" hideUntilReady duration={0.9}>
               {hasSplit ? (
                 <>
-                  {firstLine}{" "}
-                  <span className="text-brand-gradient">
-                    שמייצרת {restLine.join(" שמייצרת ")}
-                  </span>
+                  {firstLine}{' '}
+                  <span className="text-brand-gradient">שמייצרת {restLine.join(' שמייצרת ')}</span>
                 </>
               ) : (
                 hero.title
               )}
             </TextReveal>
 
-            <p className="text-muted max-w-xl text-[1.125rem] leading-relaxed">
-              {hero.subtitle}
-            </p>
+            <p className="text-muted max-w-xl text-[1.125rem] leading-relaxed">{hero.subtitle}</p>
 
             <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:gap-4">
               <Button href="/contact" size="lg">

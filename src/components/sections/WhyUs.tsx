@@ -1,10 +1,10 @@
-import { Reveal } from "@/components/motion/Reveal";
-import { Container } from "@/components/ui/Container";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { getContent } from "@/lib/queries";
+import { Reveal } from '@/components/motion/Reveal';
+import { Container } from '@/components/ui/Container';
+import { SectionHeading } from '@/components/ui/SectionHeading';
+import { getContent } from '@/lib/queries';
 
 export async function WhyUs() {
-  const why = await getContent("home.why");
+  const why = await getContent('home.why');
 
   return (
     <section className="section-y" aria-labelledby="why-heading">
@@ -22,12 +22,10 @@ export async function WhyUs() {
                 className="font-latin text-brand-gradient text-2xl font-extrabold"
                 dir="ltr"
               >
-                {String(i + 1).padStart(2, "0")}
+                {String(i + 1).padStart(2, '0')}
               </span>
               <h3 className="text-h3 text-fg">{card.title}</h3>
-              <p className="text-muted text-[0.9375rem] leading-relaxed">
-                {card.description}
-              </p>
+              <p className="text-muted text-[0.9375rem] leading-relaxed">{card.description}</p>
             </li>
           ))}
         </Reveal>
