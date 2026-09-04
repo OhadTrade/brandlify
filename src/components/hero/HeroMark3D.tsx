@@ -54,13 +54,18 @@ function Facet({
   const colour = facetColour(facetKey);
 
   const geometry = useMemo(() => {
+    // The outline is no longer a triangle: buildFacets truncates each corner,
+    // so this is a hexagon. Walk whatever it hands over.
     const shape = new THREE.Shape();
     shape.moveTo(points[0]![0], points[0]![1]);
-    shape.lineTo(points[1]![0], points[1]![1]);
-    shape.lineTo(points[2]![0], points[2]![1]);
+    for (let i = 1; i < points.length; i++) shape.lineTo(points[i]![0], points[i]![1]);
     shape.closePath();
 
-    const bevel = 0.075;
+    // Narrower than it was. The chamfer reads at 0.06 just as well as at 0.075
+    // once the corners are truncated, and every unit of bevel is also a unit of
+    // outline offset at the corners, so the smaller number leaves more margin
+    // between the cut and the point where it would show again.
+    const bevel = 0.06;
     const geo = new THREE.ExtrudeGeometry(shape, {
       depth,
       bevelEnabled: true,
@@ -88,9 +93,9 @@ function Facet({
     const pos = geo.attributes.position!;
     const colours = new Float32Array(pos.count * 3);
 
-    // Centroid and radius of the triangle, for the across-the-face gradient.
-    const cx = (points[0]![0] + points[1]![0] + points[2]![0]) / 3;
-    const cy = (points[0]![1] + points[1]![1] + points[2]![1]) / 3;
+    // Centroid and radius of the outline, for the across-the-face gradient.
+    const cx = points.reduce((a, [x]) => a + x, 0) / points.length;
+    const cy = points.reduce((a, [, y]) => a + y, 0) / points.length;
     const radius =
       Math.max(...points.map(([x, y]) => Math.hypot(x - cx, y - cy))) || 1;
 
@@ -135,7 +140,11 @@ function Facet({
       } else {
         // Side wall and back. Never more than a hint, and only near the front.
         c.copy(dark).lerp(base, 0.35 * t);
-        c.multiplyScalar(0.7);
+        // Was 0.7. On white, where the colours were measured, a side wall this
+        // dark still had the page behind it to read against. On #08060E the
+        // bottom-left facets fell to within a couple of values of the
+        // background and the mark simply lost its lower edge.
+        c.multiplyScalar(0.86);
       }
 
       colours[i * 3] = c.r;
@@ -169,12 +178,20 @@ function Facet({
       */}
       <meshPhysicalMaterial
         vertexColors
-        roughness={0.12}
+        roughness={0.16}
         metalness={0.1}
         clearcoat={1}
-        clearcoatRoughness={0.02}
-        reflectivity={0.9}
-        envMapIntensity={0.85}
+        /*
+         * Was 0.02, a mirror. A mirror-sharp coat reflects the light strips at
+         * their true angular size, which is a hairline: on most facets, at most
+         * camera angles, it missed the lens entirely and the mark read as matte
+         * paper. Roughening the coat spreads each strip into a band wide enough
+         * to actually cross a face, which is what a highlight sweeping over an
+         * object looks like.
+         */
+        clearcoatRoughness={0.055}
+        reflectivity={0.95}
+        envMapIntensity={1.35}
       />
     </mesh>
   );
@@ -194,7 +211,29 @@ function Mark({ progress }: { progress: React.RefObject<number> }) {
    * floating tiles. At 0.012 the chamfers overlapped and the grooves vanished
    * into one blended plate. This is the width where they just meet.
    */
-  const facets = useMemo(() => buildFacets({ gap: 0.04 }), []);
+  const facets = useMemo(
+    () =>
+      buildFacets({
+        gap: 0.04,
+        // Small on purpose. The needle is caused by the ANGLE, not by any
+        // shortage of room: 45deg gives an offset of bevel / sin(22.5deg) =
+        // 2.6x, and any truncation at all replaces it with two 112deg corners
+        // where the factor is 1.2x. So the cut only has to exist. 0.13 was
+        // tried first and it was far too much - the facets rounded off into
+        // octagonal tiles, the corners where four of them meet opened into
+        // holes, and the letterform started coming apart. At 0.05 the cut is a
+        // 5% nick on a one-unit edge: the needle is gone and the triangle is
+        // still a triangle.
+        corner: 0.05,
+        // Deeper than the 0.28 the 2D generators use. On screen the mark is
+        // seen almost face on, so depth only ever shows as the sliver of side
+        // wall at the silhouette and as the length of the shadow a facet casts
+        // into its neighbour's groove. At 0.28 that sliver was thin enough that
+        // the mark read as printed; this is where it reads as machined.
+        depth: 0.38,
+      }),
+    [],
+  );
 
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
@@ -222,10 +261,25 @@ function Mark({ progress }: { progress: React.RefObject<number> }) {
     if (!g) return;
     const t = progress.current ?? 0;
 
-    // Idle spin, plus pointer lean, plus the scroll rotation.
+    /*
+     * Resting pose, then idle sway, then pointer lean, then the scroll turn.
+     *
+     * The rest offsets are the important part and they were missing. The
+     * <group> carries a rotation prop, but this callback writes rotation.x and
+     * rotation.y every frame, so that prop was overwritten on frame one -
+     * exactly the trap the scale comment above describes. The mark was
+     * therefore resting at dead-on zero and swaying symmetrically around it,
+     * which is the one angle where an extruded plate shows none of its depth:
+     * no side wall at the silhouette, and every chamfer at the same angle to
+     * the camera. Holding it a third of a radian round and a little tipped
+     * puts the end-side chamfers into the key and gives the silhouette a
+     * visible thickness, which is the whole reason for building it in 3D.
+     */
+    const REST_Y = -0.34;
+    const REST_X = 0.12;
     const spin = state.clock.elapsedTime * 0.18;
-    const targetY = Math.sin(spin) * 0.28 + pointer.current.x * MAX_TILT + t * 1.4;
-    const targetX = -pointer.current.y * MAX_TILT + t * 0.5;
+    const targetY = REST_Y + Math.sin(spin) * 0.22 + pointer.current.x * MAX_TILT + t * 1.4;
+    const targetX = REST_X - pointer.current.y * MAX_TILT + t * 0.5;
 
     // Frame-rate independent easing.
     const ease = 1 - Math.pow(0.001, delta);
@@ -266,7 +320,8 @@ function Mark({ progress }: { progress: React.RefObject<number> }) {
   });
 
   return (
-    <group ref={group} rotation={[0.08, -0.3, 0]}>
+    // No rotation prop: useFrame owns all three axes from the first frame.
+    <group ref={group}>
       {facets.map((facet) => (
         <Facet key={facet.key} facetKey={facet.key} points={facet.points} depth={facet.depth} />
       ))}
@@ -343,7 +398,7 @@ export default function HeroMark3D({
         // Nudged up with the ambient down, so the mark keeps its overall
         // brightness while the range between its darks and its highlights
         // widens. That gap is the whole difference between glossy and matte.
-        gl.toneMappingExposure = 1.15;
+        gl.toneMappingExposure = 1.22;
       }}
       style={{ pointerEvents: 'none' }}
     >
@@ -371,22 +426,40 @@ export default function HeroMark3D({
         <Lightformer intensity={0.5} color="#B387E8" position={[3, 2, 4]} scale={[5, 5, 1]} />
         <Lightformer intensity={0.6} color="#E635F0" position={[-4, 1, -2]} scale={[6, 6, 1]} />
 
+        {/*
+          The key. Off to the upper left, matching LIGHT_2D, which is the
+          direction the baked gradient already runs — so the reflection agrees
+          with the shading underneath instead of contradicting it.
+
+          It is a soft box rather than another hairline: the thin strips draw
+          the hard streaks, but a mark lit only by strips has facets that face
+          nowhere in particular and go dead. This gives those a broad, low
+          sheen so the whole plate reads as one lit object.
+        */}
         <Lightformer
-          intensity={9}
+          intensity={1.9}
+          color="#FFF4FD"
+          position={[-3.4, 3.2, 5]}
+          rotation={[0, 0, Math.PI / 4]}
+          scale={[7, 4, 1]}
+        />
+
+        <Lightformer
+          intensity={13}
           color="#ffffff"
           position={[2.2, 3.4, 3.2]}
           rotation={[0, 0, Math.PI / 4]}
           scale={[10, 0.18, 1]}
         />
         <Lightformer
-          intensity={6}
+          intensity={8.5}
           color="#ffffff"
           position={[-2.6, 1.2, 3.6]}
           rotation={[0, 0, Math.PI / 4]}
           scale={[9, 0.14, 1]}
         />
         <Lightformer
-          intensity={4.5}
+          intensity={6.5}
           color="#F884EC"
           position={[-1.5, -2.8, 3.4]}
           rotation={[0, 0, Math.PI / 4]}
@@ -405,7 +478,7 @@ export default function HeroMark3D({
           stack.
         */}
         <Lightformer
-          intensity={5.5}
+          intensity={7.5}
           color="#ffffff"
           position={[0.6, -0.4, 4.2]}
           rotation={[0, 0, -Math.PI / 4]}

@@ -84,10 +84,55 @@ function inset(points: [number, number][], amount: number): [number, number][] {
 }
 
 /**
+ * Cut every corner back along both of its edges, turning each triangle into a
+ * hexagon with three long sides and three short corner flats.
+ *
+ * This exists because of how ExtrudeGeometry builds a bevel. It offsets the
+ * outline along each corner's angle bisector, by bevelSize / sin(theta / 2).
+ * That denominator is the whole problem: a right triangle has two 45deg
+ * corners, where sin(22.5deg) = 0.383 and the outline is therefore pushed out
+ * 2.6x further than the bevel is wide. The visible result is a needle sticking
+ * out of the sharp end of every facet, and eighteen facets means thirty-six
+ * needles.
+ *
+ * Truncating first turns each 45deg corner into two of roughly 112deg, where
+ * the factor falls to 1.2, and leaves a flat long enough to absorb what is
+ * left. Cut glass and machined metal have corner flats for the same physical
+ * reason: an edge that thin does not survive being made.
+ *
+ * Off by default. The 2D generators have no bevel and therefore no needles, and
+ * a triangle is the honest shape for them.
+ */
+function truncate(points: [number, number][], amount: number): [number, number][] {
+  if (amount <= 0) return points;
+  const n = points.length;
+  const out: [number, number][] = [];
+
+  for (let i = 0; i < n; i++) {
+    const p = points[i]!;
+    const prev = points[(i - 1 + n) % n]!;
+    const next = points[(i + 1) % n]!;
+
+    // Prev side first, then next side, so the polygon keeps its winding.
+    for (const q of [prev, next]) {
+      const dx = q[0] - p[0];
+      const dy = q[1] - p[1];
+      const len = Math.hypot(dx, dy) || 1;
+      // Never cut past 45% of an edge: two corners eating the same short edge
+      // from both ends would cross over and invert the outline.
+      const t = Math.min(amount, len * 0.45) / len;
+      out.push([p[0] + dx * t, p[1] + dy * t]);
+    }
+  }
+
+  return out;
+}
+
+/**
  * Flatten the cell map into individual triangles positioned in world space.
  * The mark is centred on the origin and one cell is one unit.
  */
-export function buildFacets({ gap = 0.045 } = {}): Facet[] {
+export function buildFacets({ gap = 0.045, corner = 0, depth = 0.28 } = {}): Facet[] {
   const facets: Facet[] = [];
 
   CELLS.forEach((row, r) => {
@@ -112,13 +157,13 @@ export function buildFacets({ gap = 0.045 } = {}): Facet[] {
 
         facets.push({
           key: `${r}-${c}-${kind}`,
-          points: inset(points, gap),
+          points: truncate(inset(points, gap), corner),
           // Uniform. The facets used to alternate between two depths so
           // neighbours never sat flush, which read as a pile of tiles; the mark
           // is meant to be one solid plate with grooves cut between the facets,
           // and every edge landing on the same plane is what lets a single
           // highlight run across several of them at once.
-          depth: 0.28,
+          depth,
           ramp,
         });
       });
