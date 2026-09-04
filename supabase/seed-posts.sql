@@ -1,7 +1,7 @@
 -- =============================================================================
 -- Brandlify — editorial seed.
 --
--- Six articles and the About page story.
+-- Six articles, the About page story, and the portfolio.
 --
 -- The articles are one per service plus the pricing pillar they all link back to.
 -- Every one is written against a question people actually type into Google in
@@ -559,3 +559,62 @@ insert into public.site_content (key, value_json) values (
   )
 )
 on conflict (key) do update set value_json = excluded.value_json, updated_at = now();
+
+
+-- =============================================================================
+-- Portfolio.
+--
+-- Real client work only. `results` is deliberately left null: the outcome of
+-- the engagement is not known here, and a portfolio entry that invents one is
+-- worse than a portfolio entry that has none. The challenge and solution text
+-- describes what the delivered site demonstrably does, which is checkable by
+-- anyone who follows the live link.
+--
+-- Cover and gallery images live in the `media` storage bucket, so this file
+-- references them by URL rather than carrying them.
+-- =============================================================================
+
+insert into public.projects (
+  slug, business_name, category, description, challenge, solution,
+  services, cover_image, gallery, live_url, featured, published, order_index
+) values (
+  'daniel-kitchens',
+  'מטבחי דניאל',
+  'נגרות ומטבחי יוקרה',
+  'אתר תדמית בעברית לנגריית מטבחי יוקרה מדימונה, עסק משפחתי שפועל מאז 1999. עמוד אחד שמוביל מהרושם הראשון ועד לפנייה בוואטסאפ: גלריה של שנים-עשר מטבחים, תהליך העבודה בארבעה שלבים, ומערך משפטי ונגישות מלא.',
+  concat_ws(E'
+
+',
+    'מטבח נמכר בעיניים. לנגרייה עם עשרות עבודות מאחוריה, כל דבר שאינו תמונה גדולה ונקייה עובד נגדה — ואתר שמקטין את העבודה לתמונות ממוזערות בגלריה גנרית מוחק בדיוק את מה שהלקוח בא לראות.',
+    'לצד זה, האתגר השני היה ערוץ הפנייה. מי שמחפש מטבח לא ממלא טופס ומחכה יומיים; הוא רוצה לשאול שאלה עכשיו. אתר שמסתיים בטופס יצירת קשר סטנדרטי היה מאבד חלק גדול מהפניות עוד לפני שהן מתחילות.',
+    'ושלישית: העסק ותיק, משפחתי, ופועל מדימונה. האתר היה צריך לשדר את הוותק הזה בלי להיראות ישן.'
+  ),
+  concat_ws(E'
+
+',
+    'עמוד אחד, שבעה מקטעים, סדר קריאה שנבנה כמו שיחת מכירה: רושם ראשוני, עבודות, איך זה עובד, מי אנחנו, מה אנחנו נותנים, מה אומרים עלינו, ואיך מתחילים.',
+    'הפתיחה היא קרוסלת תמונות במסך מלא של מטבחים אמיתיים מהנגרייה, עם כפתור עצירה — מי שקשה לו עם תנועה יכול לעצור אותה. הגלריה מציגה שנים-עשר מטבחים, לכל אחד שם וקו אחד שמתאר את החומרים והגימור, כך שהמבקר לומד את השפה של הנגרייה ולא רק גולל תמונות.',
+    'כל קריאה לפעולה באתר מובילה לוואטסאפ עם הודעה כתובה מראש, כך שהמבקר לא צריך לנסח שום דבר. מספרי הטלפון הישירים והמייל פתוחים בפוטר לצד שעות הפעילות והכתובת, בלי להסתיר אותם מאחורי טופס.',
+    'האתר נבנה ב-Next.js, בעברית ובכיוון RTL מהיסוד ולא כתרגום של תבנית לועזית. נגישות טופלה כחלק מהבנייה: ווידג׳ט נגישות, שליטה בתנועה, והצהרת נגישות ייעודית. לצדה מערך משפטי מלא — מדיניות פרטיות, תנאי שימוש, כתב ויתור ומדיניות עוגיות.'
+  ),
+  array['בניית אתרים'],
+  'https://kdlsprefdmvjhvelaebk.supabase.co/storage/v1/object/public/media/projects/daniel-kitchens/cover.png',
+  array['https://kdlsprefdmvjhvelaebk.supabase.co/storage/v1/object/public/media/projects/daniel-kitchens/gallery-1.png'],
+  'https://www.danielkitchens.com',
+  true,
+  true,
+  1
+)
+on conflict (slug) do update set
+  business_name = excluded.business_name,
+  category      = excluded.category,
+  description   = excluded.description,
+  challenge     = excluded.challenge,
+  solution      = excluded.solution,
+  services      = excluded.services,
+  cover_image   = excluded.cover_image,
+  gallery       = excluded.gallery,
+  live_url      = excluded.live_url,
+  featured      = excluded.featured,
+  published     = excluded.published,
+  order_index   = excluded.order_index;
