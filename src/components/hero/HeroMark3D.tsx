@@ -232,6 +232,24 @@ function Mark({ progress }: { progress: React.RefObject<number> }) {
     g.rotation.y += (targetY - g.rotation.y) * ease;
     g.rotation.x += (targetX - g.rotation.x) * ease;
 
+    /*
+     * Idle float.
+     *
+     * At rest the only motion was the yaw, which reads as a turntable: an
+     * object bolted to a plinth and spun. A slow vertical drift on a different
+     * period, plus a barely-there roll, reads as something suspended instead.
+     * Both are damped by (1 - t) so the mark is not still bobbing while it
+     * recedes; the scroll takes over cleanly.
+     *
+     * The periods are deliberately not multiples of each other. Matched
+     * periods produce a visible repeating loop; these two drift in and out of
+     * phase over about half a minute, which is long enough that nobody sees
+     * the pattern restart.
+     */
+    const rest = 1 - t;
+    g.position.y = Math.sin(state.clock.elapsedTime * 0.55) * 0.075 * rest;
+    g.rotation.z = Math.sin(state.clock.elapsedTime * 0.37) * 0.035 * rest;
+
     // Recede in Z and fade out as the hero scrolls away.
     g.position.z = -t * 7;
     g.scale.setScalar(BASE_SCALE * (1 - t * 0.25));
@@ -373,6 +391,25 @@ export default function HeroMark3D({
           position={[-1.5, -2.8, 3.4]}
           rotation={[0, 0, Math.PI / 4]}
           scale={[8, 0.15, 1]}
+        />
+
+        {/*
+          The one strip on the other diagonal.
+
+          With every strip at +45deg the highlights all ran the same way, and a
+          facet turning out of one streak had nothing to turn into: the specular
+          blinked off and the mark went flat for part of every rotation. The
+          mark is built on both diagonals — the cell at (1,1) is the one that
+          leans the other way and shapes the upper counter — so a streak at
+          -45deg has edges to run along, and the two families cross rather than
+          stack.
+        */}
+        <Lightformer
+          intensity={5.5}
+          color="#ffffff"
+          position={[0.6, -0.4, 4.2]}
+          rotation={[0, 0, -Math.PI / 4]}
+          scale={[9, 0.13, 1]}
         />
       </Environment>
 

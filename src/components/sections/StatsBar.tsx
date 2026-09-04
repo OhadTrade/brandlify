@@ -32,7 +32,31 @@ export async function StatsBar() {
   const { items } = await getContent('home.stats');
 
   return (
-    <section className="border-line bg-surface border-y" aria-label="ההתחייבויות שלנו">
+    /*
+     * Pulled up over the hero's foot rather than butted against it.
+     *
+     * The hero's vignette already fades its bottom to near-black, and this band
+     * is a lighter surface with a rule on top of it, so the two met as a hard
+     * horizontal seam right where the eye leaves the hero. Overlapping them by
+     * a few rem, with no rule on the leading edge, turns that seam into the
+     * band emerging from underneath the hero. `relative` is what puts it above
+     * the hero in paint order despite the negative margin.
+     */
+    <section
+      className="border-line bg-surface relative -mt-10 border-b md:-mt-14"
+      aria-label="ההתחייבויות שלנו"
+      /*
+       * Removing the top rule was not enough on its own: the band's surface is
+       * lighter than the hero's foot, so the two still met as a colour step in
+       * exactly the same place. The mask fades the band's own background in
+       * over its first 4rem, which is entirely inside its top padding, so the
+       * figures below are untouched and the edge simply stops existing.
+       */
+      style={{
+        maskImage: 'linear-gradient(to bottom, transparent, #000 4rem)',
+        WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 4rem)',
+      }}
+    >
       <Container>
         <Reveal
           as="ul"

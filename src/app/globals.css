@@ -99,6 +99,15 @@
      that positions against the header reads this token, so they all scale
      together. 4.5rem is the same 72px at the default root size. */
   --nav-height: 4.5rem;
+
+  /* Layer scale. Only three things ever leave the document flow, and this is
+     all of them, so the numbers stay small and readable rather than drifting
+     into z-50/z-9999 territory. The grain sits above the header because it is
+     a property of the screen, not of the page: a header that punched a clean
+     rectangle through it would advertise that the texture is a layer. */
+  --z-header: 50;
+  --z-overlay: 40;
+  --z-grain: 60;
 }
 
 @layer base {
@@ -219,6 +228,41 @@
       the keyframe fades the heading in anyway after 900ms. Nothing on this site
       can leave content permanently invisible waiting for JavaScript.
    ========================================================================== */
+/* ==========================================================================
+   Film grain
+   ==========================================================================
+
+   A flat dark surface is the thing that most reliably makes a site read as
+   rendered rather than made. Large areas of #08060E have nothing in them for
+   the eye to hold, and the gradients behind the hero and the section glows
+   band visibly on 8-bit panels. A little noise fixes both: it gives the empty
+   areas texture and it dithers the gradients.
+
+   Three constraints shaped this implementation:
+
+   - It is `fixed`, and it is a pseudo-element on `body`, which means it never
+     participates in scrolling. Grain applied to a scrolling container repaints
+     the filter on every frame and is one of the fastest ways to lose mobile
+     frame rate.
+   - The texture is an inline SVG turbulence, so there is no request and no
+     image to decode. The browser generates it once.
+   - `pointer-events: none`, so it is invisible to every interaction.
+
+   Opacity is deliberately low. At 0.04 it is not a visible effect; it is the
+   difference between a surface and a void.
+*/
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-grain);
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   :root:not([data-motion='ready']) [data-reveal='pending'] {
     opacity: 0;
@@ -333,5 +377,11 @@
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     background-color: var(--color-base);
+  }
+
+  /* Grain lowers effective contrast slightly everywhere. Someone who asked for
+     more of it does not want a texture over their text. */
+  body::after {
+    display: none;
   }
 }

@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Container } from '@/components/ui/Container';
+import { Icon } from '@/components/ui/Icon';
 import { Logo } from '@/components/ui/Logo';
 import { useMagnetic } from '@/lib/animations/useMagnetic';
 import { navItems } from '@/lib/site';
@@ -15,15 +16,31 @@ const SCROLLED_AT = 80;
 export function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const sentinel = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const reduce = useReducedMotion();
   const ctaRef = useMagnetic<HTMLAnchorElement>({ radius: 80, strength: 0.3 });
 
+  /*
+   * Whether the page has scrolled past the hero's first 80px, observed rather
+   * than polled.
+   *
+   * This used to be a scroll listener calling setScrolled on every event. It
+   * worked, but it ran a React state update on every frame of every scroll for
+   * a value that changes exactly twice, and under Lenis that is a lot of
+   * frames. An IntersectionObserver watching a sentinel at the top of the
+   * document fires only on the two crossings, off the main thread's scroll
+   * path entirely.
+   */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > SCROLLED_AT);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    const el = sentinel.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setScrolled(!entry?.isIntersecting),
+      { threshold: 0 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
   // Close on navigation.
@@ -48,6 +65,19 @@ export function Navbar() {
 
   return (
     <>
+      {/*
+        The scroll sentinel: a zero-width strip occupying the first SCROLLED_AT
+        pixels of the document. `absolute` with no positioned ancestor resolves
+        against the initial containing block, so it is pinned to the top of the
+        page rather than to the viewport, and scrolls out of view on cue.
+      */}
+      <div
+        ref={sentinel}
+        aria-hidden
+        className="pointer-events-none absolute top-0 start-0 w-px"
+        style={{ height: SCROLLED_AT }}
+      />
+
       <header
         data-chrome
         className={cn(
@@ -105,7 +135,7 @@ export function Navbar() {
             className="bg-cta rounded-btn font-heading shadow-glow-violet hover:shadow-glow-magenta ease-snap hidden h-10 items-center gap-2 px-5 text-[0.9375rem] font-bold text-white transition-[box-shadow,scale] duration-200 active:scale-[0.97] active:duration-75 motion-reduce:transition-none motion-reduce:active:scale-100 lg:inline-flex"
           >
             בואו נדבר
-            <span aria-hidden>←</span>
+            <Icon name="arrow" className="h-4 w-4" />
           </Link>
 
           <button
@@ -194,7 +224,7 @@ export function Navbar() {
                     className="bg-cta rounded-btn font-heading flex h-14 items-center justify-center gap-2 text-lg font-bold text-white"
                   >
                     בואו נדבר
-                    <span aria-hidden>←</span>
+                    <Icon name="arrow" className="h-5 w-5" />
                   </Link>
                 </motion.div>
               </Container>
