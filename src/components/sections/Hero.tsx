@@ -34,7 +34,9 @@ export async function Hero() {
   return (
     // Pulled up under the fixed navbar so the visual runs behind it while it is
     // still transparent.
-    <section className="relative -mt-(--nav-height) flex min-h-svh flex-col justify-center overflow-hidden">
+    <section
+      className="hero-diagonal relative -mt-(--nav-height) flex min-h-svh flex-col justify-center overflow-hidden"
+    >
       {/*
         The mark.
 
@@ -62,24 +64,41 @@ export async function Hero() {
         room to put the two side by side.
       */}
       <div
-        className="relative h-[42svh] w-full shrink-0 pt-(--nav-height) pb-3 lg:absolute lg:inset-0 lg:h-auto lg:p-0"
+        className="hero-diagonal-mark relative h-[42svh] w-full shrink-0 pt-(--nav-height) pb-3 lg:absolute lg:inset-0 lg:h-auto lg:p-0"
         aria-hidden
       >
         <HeroVisual variant="backdrop" />
       </div>
 
       {/*
-        Two-axis vignette. Symmetrical left-to-right on purpose: a CSS gradient
-        does not flip with `dir`, and a one-sided version would darken the wrong
-        edge the moment anything is ever rendered LTR. The vertical pass hands
-        the section off to the stats bar below without a seam.
+        The seam.
+
+        A hairline along the same 45deg the mask is cut on, so the edge reads as
+        a deliberate cut rather than as an image that happens to end. It is the
+        one place on the page where the brand gradient is a line and not a fill,
+        which is the point: every chamfer in this design system is 45deg, and
+        this is that angle at the scale of the whole screen.
+
+        Desktop only. Below the breakpoint the mark has its own band and there
+        is no diagonal to draw.
+      */}
+      <div aria-hidden className="hero-diagonal-seam pointer-events-none absolute inset-0" />
+
+      {/*
+        Vignette. Symmetrical left-to-right on purpose: a CSS gradient does not
+        flip with `dir`, and a one-sided version would darken the wrong edge the
+        moment anything is ever rendered LTR. The horizontal pass is lighter
+        than it was, because the mark no longer runs under the copy on desktop -
+        the diagonal keeps them apart, so the darkening only has to soften the
+        outer edges rather than rescue readability. The vertical pass hands the
+        section off to the band below without a seam.
       */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
           background: `
-            linear-gradient(to right, rgb(8 6 14 / 0.92), rgb(8 6 14 / 0.35) 26%, transparent 48%, rgb(8 6 14 / 0.35) 74%, rgb(8 6 14 / 0.92)),
+            linear-gradient(to right, rgb(8 6 14 / 0.8), rgb(8 6 14 / 0.22) 24%, transparent 46%, rgb(8 6 14 / 0.22) 76%, rgb(8 6 14 / 0.8)),
             linear-gradient(to bottom, rgb(8 6 14 / 0.55), transparent 22%, transparent 52%, rgb(8 6 14 / 0.96))
           `,
         }}

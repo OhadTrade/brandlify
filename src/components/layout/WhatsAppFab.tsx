@@ -20,7 +20,7 @@ export function WhatsAppFab() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="שליחת הודעה בוואטסאפ"
-      className="bg-cta shadow-glow-magenta fixed bottom-5 end-5 z-40 flex h-14 w-14 items-center justify-center rounded-full text-white ease-snap transition-transform duration-200 hover:scale-105 active:scale-95 active:duration-75 motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100 lg:hidden"
+      className="bg-cta shadow-glow-magenta fixed bottom-5 end-5 z-30 flex h-14 w-14 items-center justify-center rounded-full text-white ease-snap transition-transform duration-200 hover:scale-105 active:scale-95 active:duration-75 motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100 lg:hidden"
     >
       <Icon name="whatsapp" className="h-7 w-7" />
     </a>

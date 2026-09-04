@@ -27,16 +27,34 @@ export const whatsappUrl = (
   message = 'היי, הגעתי מהאתר של Brandlify ואשמח לשמוע פרטים.',
 ) => `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(message)}`;
 
-export type NavItem = { href: string; label: string };
+export type NavItem = {
+  href: string;
+  label: string;
+  /**
+   * Shown in the bar itself. Everything else lives in the full-screen menu.
+   *
+   * Seven links across the top is the shape of a template, and it was the
+   * single thing that made this header interchangeable with any other Israeli
+   * business site. Three is a choice. Nothing is actually hidden: the menu
+   * holds all of them at display size, the footer lists them, and the crawler
+   * follows both.
+   *
+   * `/` is not primary because the logo is already the way home, and
+   * `/contact` is not primary because the call to action next to it goes there.
+   */
+  primary?: boolean;
+};
 
 export const navItems: NavItem[] = [
   { href: '/', label: 'דף הבית' },
-  { href: '/services', label: 'שירותים' },
-  { href: '/portfolio', label: 'עבודות' },
+  { href: '/services', label: 'שירותים', primary: true },
+  { href: '/portfolio', label: 'עבודות', primary: true },
   { href: '/about', label: 'אודות' },
-  { href: '/blog', label: 'מאמרים' },
+  { href: '/blog', label: 'מאמרים', primary: true },
   { href: '/contact', label: 'צור קשר' },
 ];
+
+export const primaryNavItems: NavItem[] = navItems.filter((item) => item.primary);
 
 /**
  * The five services. Slugs are the URL contract; the copy here is the short

@@ -107,6 +107,10 @@
      rectangle through it would advertise that the texture is a layer. */
   --z-header: 50;
   --z-overlay: 40;
+  /* Below the overlay. The floating WhatsApp button used to share the
+     overlay's level and, being later in the DOM, painted on top of the open
+     menu and sat across its call to action. */
+  --z-fab: 30;
   --z-grain: 60;
 }
 
@@ -228,6 +232,78 @@
       the keyframe fades the heading in anyway after 900ms. Nothing on this site
       can leave content permanently invisible waiting for JavaScript.
    ========================================================================== */
+/* ==========================================================================
+   The hero diagonal
+   ==========================================================================
+
+   The mark sits on one side of a 45deg cut and the copy on the other, and the
+   cut is the same angle as every chamfer in this design system. That is the
+   whole idea: the mark is eighteen right triangles on a 45deg grid, so the
+   angle is the one thing about this brand that cannot be borrowed.
+
+   Both the mask and the hairline are driven from the same two custom
+   properties, so they cannot drift apart.
+
+   Why a masked gradient and not a clip-path polygon: `linear-gradient(135deg)`
+   is a true 135deg in CSS, measured as an angle, so the edge it produces is
+   exactly 45deg at every viewport size. A polygon would need its points
+   recomputed against the aspect ratio to stay at 45deg, and would silently
+   become 38deg on a wide monitor.
+
+   Desktop only. Below 1024px the mark has its own band above the copy and
+   there is no diagonal to draw.
+   ========================================================================== */
+@media (min-width: 1024px) {
+  .hero-diagonal {
+    /*
+       Direction of the cut, and how far along it falls.
+
+       62% was the first value and it put the line through the headline: the
+       cut passed between the two words of the h1 at the top of the copy block
+       and only cleared it lower down. The seam is meant to separate the mark
+       from the copy, so it has to be entirely on the mark's side of it.
+    */
+    --seam-angle: 135deg;
+    --seam-at: 56%;
+  }
+
+  .hero-diagonal-mark {
+    -webkit-mask-image: linear-gradient(
+      var(--seam-angle),
+      #000 var(--seam-at),
+      transparent var(--seam-at)
+    );
+    mask-image: linear-gradient(
+      var(--seam-angle),
+      #000 var(--seam-at),
+      transparent var(--seam-at)
+    );
+  }
+
+  /*
+     Two layers. The hairline is the cut itself; the wide, very faint band under
+     it is the light coming off it. At one pixel and half opacity the line was
+     technically present and visually absent - on this background a single
+     magenta pixel row simply does not register, and an edge nobody sees is not
+     an edge.
+  */
+  .hero-diagonal-seam {
+    background:
+      linear-gradient(
+        var(--seam-angle),
+        transparent calc(var(--seam-at) - 1px),
+        rgb(230 53 240 / 0.85) var(--seam-at),
+        transparent calc(var(--seam-at) + 1px)
+      ),
+      linear-gradient(
+        var(--seam-angle),
+        transparent calc(var(--seam-at) - 70px),
+        rgb(131 47 240 / 0.11) var(--seam-at),
+        transparent calc(var(--seam-at) + 70px)
+      );
+  }
+}
+
 /* ==========================================================================
    Film grain
    ==========================================================================
