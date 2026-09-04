@@ -34,9 +34,37 @@ export async function Hero() {
   return (
     // Pulled up under the fixed navbar so the visual runs behind it while it is
     // still transparent.
-    <section className="relative -mt-(--nav-height) flex min-h-svh items-center overflow-hidden">
-      {/* The mark, filling the section. */}
-      <div className="absolute inset-0" aria-hidden>
+    <section className="relative -mt-(--nav-height) flex min-h-svh flex-col justify-center overflow-hidden">
+      {/*
+        The mark.
+
+        On desktop it fills the section and sits off to the end side, clear of
+        the copy. On mobile there is no "off to the side": the column is the
+        whole screen, so the mark was directly underneath the headline. Dropping
+        it to 40% opacity was the old answer and it did not work - a grid of
+        hard-edged triangles behind Hebrew display type is noise at any opacity,
+        and the mark itself became an unreadable fragment, cropped by the pill
+        above it and the buttons below.
+
+        So on mobile the section becomes a column with a band of fixed height
+        for the mark and the copy stacked under it. Two earlier attempts are
+        worth recording. A 50/50 split broke on a 375x667 phone, where the copy
+        alone is taller than half the viewport and grew back up into the mark.
+        Giving the band `flex-1` and the image `max-h-full` looked right but was
+        not: a percentage max-height against a flex item that is sized by
+        flex-grow does not reliably constrain, so the image kept its intrinsic
+        height and pushed the second button off the bottom of the screen. A
+        definite height is the version that actually holds, because every
+        percentage below it then has something real to resolve against.
+
+        On desktop the block leaves the flow entirely and goes back to filling
+        the section behind the copy, which is where it belongs when there is
+        room to put the two side by side.
+      */}
+      <div
+        className="relative h-[42svh] w-full shrink-0 pt-(--nav-height) pb-3 lg:absolute lg:inset-0 lg:h-auto lg:p-0"
+        aria-hidden
+      >
         <HeroVisual variant="backdrop" />
       </div>
 
@@ -57,7 +85,7 @@ export async function Hero() {
         }}
       />
 
-      <Container className="relative z-10 pt-[calc(var(--nav-height)+3rem)] pb-24 md:pb-32">
+      <Container className="relative z-10 shrink-0 pb-14 sm:pb-20 lg:pt-[calc(var(--nav-height)+3rem)] lg:pb-32">
         <HeroScrollFade>
           <div className="flex max-w-2xl flex-col items-start gap-7">
             <p className="text-label font-latin text-muted border-line rounded-btn glass border px-3 py-2 uppercase">

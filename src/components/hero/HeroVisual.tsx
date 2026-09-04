@@ -131,11 +131,13 @@ export function HeroVisual({
         // Logical alignment, not a transform: the end side resolves to the left in
         // Hebrew and would flip on its own if the site were ever rendered LTR,
         // which keeps the mark on the opposite side from the copy either way.
-        // Below the breakpoint there is nowhere to move the mark to — the copy
-        // sits straight on top of it — so it drops back to a texture. At full
-        // strength the subtitle was landing on a bright magenta facet.
+        //
+        // Below the breakpoint it used to run at 40% because the copy sat on
+        // top of it. It no longer does: the hero gives the mark the top half of
+        // the screen to itself there, so it can be shown at full strength and
+        // actually be a logo rather than a texture.
         backdrop
-          ? 'h-full w-full justify-center opacity-[0.4] lg:justify-end lg:pe-[6%] lg:opacity-100'
+          ? 'h-full w-full justify-center opacity-95 lg:justify-end lg:pe-[6%] lg:opacity-100'
           : 'w-full justify-center',
       )}
     >
@@ -164,7 +166,13 @@ export function HeroVisual({
         className={cn(
           'relative max-w-full transition-opacity duration-500',
           backdrop
-            ? 'w-[62vw] max-w-[380px] sm:w-[46vw] lg:w-[min(37vw,500px)]'
+            ? // Height-constrained on mobile, width-constrained on desktop.
+              // Sizing this by viewport width alone was wrong: the band it has
+              // to fit into is half the viewport HEIGHT, so on a short phone
+              // (375x667) a mark sized from the width overflowed the band and
+              // landed back underneath the headline, which is the exact problem
+              // the split was meant to solve.
+              'h-full w-auto max-w-[68vw] object-contain lg:h-auto lg:w-[min(37vw,500px)] lg:max-w-full'
             : 'w-[220px] sm:w-[280px] lg:w-[380px]',
         )}
         style={{ opacity: ready ? 0 : 1 }}
