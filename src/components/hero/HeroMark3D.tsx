@@ -218,23 +218,15 @@ type Pose = {
 };
 
 const POSES: Pose[] = [
-  // The hero. Held a third of a radian round so the chamfers catch the key and
-  // the silhouette has a visible thickness.
+  // At rest. Held a third of a radian round so the chamfers catch the key and
+  // the silhouette has a visible thickness; dead-on is the one angle where an
+  // extruded plate shows none of its depth.
   { at: 0, x: -1.9, y: 0, z: 0, rotY: -0.34, rotX: 0.12, scale: 0.8, opacity: 1 },
-  // Turning through face-on as the commitments band passes. This is the only
-  // frame where the B is legible as a letter rather than as an object.
-  { at: 0.4, x: -1.05, y: 0.1, z: -1.6, rotY: 0.05, rotX: 0.04, scale: 0.56, opacity: 0.34 },
-  /*
-   * Pushed off to the end edge behind the services grid, and nearly gone.
-   *
-   * The first attempt drifted it to centre here at a third opacity, which put
-   * a large translucent object directly across the section heading. It read as
-   * a mistake rather than as depth: text over a busy shape is unreadable at any
-   * opacity, which is the same lesson the mobile hero taught. Sending it to the
-   * edge instead lets it survive in the gutters between the cards, where it is
-   * atmosphere and nothing has to be read through it.
-   */
-  { at: 1, x: -3.1, y: -0.5, z: -3.6, rotY: 0.75, rotX: -0.09, scale: 0.42, opacity: 0.1 },
+  // Turning as the hero starts to leave.
+  { at: 0.5, x: -1.5, y: 0.1, z: -2.4, rotY: 0.3, rotX: 0.05, scale: 0.68, opacity: 0.62 },
+  // Gone by the time the hero has. The stage covers the hero and nothing after
+  // it, so progress 1 has to be an exit rather than a resting place.
+  { at: 1, x: -1.1, y: 0, z: -6.5, rotY: 1.05, rotX: -0.06, scale: 0.55, opacity: 0 },
 ];
 
 const clamp01 = (n: number) => (n < 0 ? 0 : n > 1 ? 1 : n);

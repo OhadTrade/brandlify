@@ -1,9 +1,9 @@
-import type { ReactNode } from 'react';
-import { PinnedStages } from '@/components/motion/PinnedStages';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Container } from '@/components/ui/Container';
-import { Icon } from '@/components/ui/Icon';
-import { getContent } from '@/lib/queries';
+import type { ReactNode } from "react";
+import { PinnedStages } from "@/components/motion/PinnedStages";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Container } from "@/components/ui/Container";
+import { Icon } from "@/components/ui/Icon";
+import { getContent } from "@/lib/queries";
 
 /**
  * BUILD · BRAND · GROW — the five stages, as cards.
@@ -22,11 +22,11 @@ import { getContent } from '@/lib/queries';
  */
 
 const STAGE_ICONS: Record<string, string> = {
-  BUILD: 'layers',
-  DESIGN: 'palette',
-  RANK: 'trending',
-  PROMOTE: 'megaphone',
-  AUTOMATE: 'workflow',
+  BUILD: "layers",
+  DESIGN: "palette",
+  RANK: "trending",
+  PROMOTE: "megaphone",
+  AUTOMATE: "workflow",
 };
 
 /**
@@ -46,7 +46,7 @@ function CardDecorator({ children }: { children: ReactNode }) {
         className="absolute inset-0"
         style={{
           background:
-            'radial-gradient(circle at center, rgb(131 47 240 / 0.28), rgb(230 53 240 / 0.08) 55%, transparent 75%)',
+            "radial-gradient(circle at center, rgb(131 47 240 / 0.28), rgb(230 53 240 / 0.08) 55%, transparent 75%)",
         }}
       />
       <div className="border-line chamfer text-violet bg-base absolute inset-0 m-auto flex size-14 items-center justify-center border">
@@ -57,10 +57,11 @@ function CardDecorator({ children }: { children: ReactNode }) {
 }
 
 export async function BuildBrandGrow() {
-  const data = await getContent('home.build_brand_grow');
+  const data = await getContent("home.build_brand_grow");
 
   return (
     <section
+      data-flow="fade"
       className="relative flex flex-col justify-center overflow-hidden py-20 md:py-28 lg:min-h-svh lg:py-0"
       aria-labelledby="bbg-heading"
     >
@@ -68,7 +69,8 @@ export async function BuildBrandGrow() {
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-1/2 h-[500px] -translate-y-1/2 opacity-40 blur-[130px]"
         style={{
-          background: 'radial-gradient(ellipse at center, rgb(83 19 176 / 0.5), transparent 65%)',
+          background:
+            "radial-gradient(ellipse at center, rgb(83 19 176 / 0.5), transparent 65%)",
         }}
       />
 
@@ -111,20 +113,25 @@ export async function BuildBrandGrow() {
                     className="absolute inset-0"
                     style={{
                       background:
-                        'radial-gradient(ellipse 70% 45% at 50% 0%, rgb(131 47 240 / 0.30), transparent 70%)',
+                        "radial-gradient(ellipse 70% 45% at 50% 0%, rgb(131 47 240 / 0.30), transparent 70%)",
                     }}
                   />
                   <span className="bg-brand absolute inset-x-0 top-0 h-px" />
                   <span
                     className="rounded-card absolute inset-0"
-                    style={{ boxShadow: 'inset 0 0 0 1px rgb(230 53 240 / 0.45)' }}
+                    style={{
+                      boxShadow: "inset 0 0 0 1px rgb(230 53 240 / 0.45)",
+                    }}
                   />
                 </span>
 
                 <div className="relative">
                   <CardHeader className="pb-3">
                     <CardDecorator>
-                      <Icon name={STAGE_ICONS[stage.key] ?? 'layers'} className="size-6" />
+                      <Icon
+                        name={STAGE_ICONS[stage.key] ?? "layers"}
+                        className="size-6"
+                      />
                     </CardDecorator>
 
                     {/* The stage name only. It used to carry an "01 ·" prefix;

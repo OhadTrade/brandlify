@@ -112,6 +112,77 @@ export function fadeUp(
 }
 
 // -----------------------------------------------------------------------------
+// sectionFlow — a section arrives and leaves with the scroll
+// -----------------------------------------------------------------------------
+
+/**
+ * Ties a section's opacity and offset to its own passage through the viewport.
+ *
+ * `fadeUp` above is a one-shot: a section crosses a line, plays once, and is
+ * then inert for the rest of the page. That is why scrolling this site felt
+ * like paging through slides - every block was either not-yet-arrived or
+ * permanently arrived, and nothing was ever in motion because of where the
+ * reader was. This is scrubbed instead, so the page is always responding.
+ *
+ * One timeline, not two tweens. An enter tween and an exit tween on the same
+ * element are two ScrollTriggers writing the same opacity, and on a short
+ * section their ranges overlap and they fight. A single timeline with a hold in
+ * the middle cannot: proportions are of the section's whole passage, so the
+ * hold stretches on a tall section and shrinks on a short one, automatically.
+ *
+ * The exit is deliberately partial. Fading a section to nothing as it leaves
+ * makes scrolling back up feel broken, and it hides content someone may still
+ * be reading at the top of their screen; dropping it to a third reads as
+ * depth-of-field rather than as disappearance.
+ *
+ * Transform + opacity only, both composited. Never apply this to a section that
+ * contains a pinned or sticky child: a transformed ancestor becomes the
+ * containing block for both, and ScrollTrigger's pinning breaks inside one.
+ */
+export function sectionFlow(
+  mm: MatchMedia,
+  targets: Targets,
+  /**
+   * Set false for a section that pins or sticks. A transformed ancestor becomes
+   * the containing block for `position: sticky` and breaks ScrollTrigger's
+   * pinning; an ancestor that only changes opacity does neither, so those
+   * sections still arrive and leave, just without the lift. Leaving them out
+   * entirely was the first version and it read as a bug: two blocks in the
+   * middle of the page that alone did not move.
+   */
+  { lift = true }: { lift?: boolean } = {},
+) {
+  mm.add(MQ.motionOk, () => {
+    const els = gsap.utils.toArray<HTMLElement>(targets);
+    if (els.length === 0) return;
+
+    const from = lift ? { opacity: 0, y: 44, force3D: true } : { opacity: 0 };
+    const held = lift ? { opacity: 1, y: 0 } : { opacity: 1 };
+    const gone = lift ? { opacity: 0.32, y: -34 } : { opacity: 0.32 };
+
+    for (const el of els) {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: el,
+          start: 'top bottom',
+          end: 'bottom top',
+          // A little smoothing, so a fast flick does not snap the whole
+          // section from one end of its arc to the other in a single frame.
+          scrub: 0.5,
+        },
+      });
+
+      tl.fromTo(el, from, { ...held, ease: 'none', duration: 0.24 })
+        // The hold. This is most of the passage and it is where the section is
+        // simply readable; the motion exists at the edges, not underneath the
+        // text someone is reading.
+        .to(el, { ...held, duration: 0.5 })
+        .to(el, { ...gone, ease: 'none', duration: 0.26 });
+    }
+  });
+}
+
+// -----------------------------------------------------------------------------
 // textReveal — masked line/character reveal
 // -----------------------------------------------------------------------------
 

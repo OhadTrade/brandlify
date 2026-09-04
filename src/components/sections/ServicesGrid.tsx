@@ -1,17 +1,21 @@
-import { Reveal } from '@/components/motion/Reveal';
-import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
-import { Container } from '@/components/ui/Container';
-import { Icon } from '@/components/ui/Icon';
-import { SectionHeading } from '@/components/ui/SectionHeading';
-import { getServices } from '@/lib/queries';
+import { Reveal } from "@/components/motion/Reveal";
+import Link from "next/link";
+import { Button } from "@/components/ui/Button";
+import { Container } from "@/components/ui/Container";
+import { Icon } from "@/components/ui/Icon";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { getServices } from "@/lib/queries";
 
 export async function ServicesGrid() {
   const services = await getServices();
   if (services.length === 0) return null;
 
   return (
-    <section className="section-y" aria-labelledby="services-heading">
+    <section
+      data-flow="lift"
+      className="section-y"
+      aria-labelledby="services-heading"
+    >
       <Container className="flex flex-col gap-12">
         <SectionHeading
           eyebrow="What we do"
@@ -37,7 +41,7 @@ export async function ServicesGrid() {
                   aria-hidden
                   className="border-line chamfer text-violet group-hover:text-magenta flex h-12 w-12 items-center justify-center border bg-[rgb(131_47_240/0.08)] transition-colors duration-300"
                 >
-                  <Icon name={service.icon ?? 'globe'} className="h-6 w-6" />
+                  <Icon name={service.icon ?? "globe"} className="h-6 w-6" />
                 </span>
 
                 <h3 className="text-h3 text-fg">{service.title}</h3>
@@ -47,7 +51,10 @@ export async function ServicesGrid() {
 
                 <span className="text-pink flex items-center gap-2 text-sm font-semibold">
                   לפרטים
-                  <Icon name="arrow" className="h-4 w-4 transition-transform duration-200 ease-snap group-hover:-translate-x-1 motion-reduce:transform-none" />
+                  <Icon
+                    name="arrow"
+                    className="h-4 w-4 transition-transform duration-200 ease-snap group-hover:-translate-x-1 motion-reduce:transform-none"
+                  />
                 </span>
               </Link>
             </li>

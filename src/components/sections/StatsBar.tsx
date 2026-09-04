@@ -1,7 +1,7 @@
-import { Reveal } from '@/components/motion/Reveal';
-import { Container } from '@/components/ui/Container';
-import { CountingNumber } from '@/components/ui/counting-number';
-import { getContent } from '@/lib/queries';
+import { Reveal } from "@/components/motion/Reveal";
+import { Container } from "@/components/ui/Container";
+import { CountingNumber } from "@/components/ui/counting-number";
+import { getContent } from "@/lib/queries";
 
 /**
  * The four commitments, below the hero.
@@ -17,26 +17,24 @@ import { getContent } from '@/lib/queries';
  */
 
 type Figure =
-  | { kind: 'number'; value: number }
-  | { kind: 'range'; from: number; to: number }
-  | { kind: 'text'; value: string };
+  | { kind: "number"; value: number }
+  | { kind: "range"; from: number; to: number }
+  | { kind: "text"; value: string };
 
 function classify(value: string): Figure {
   const range = value.match(/^(\d+)\s*[-–]\s*(\d+)$/);
-  if (range) return { kind: 'range', from: Number(range[1]), to: Number(range[2]) };
-  if (/^\d+$/.test(value)) return { kind: 'number', value: Number(value) };
-  return { kind: 'text', value };
+  if (range)
+    return { kind: "range", from: Number(range[1]), to: Number(range[2]) };
+  if (/^\d+$/.test(value)) return { kind: "number", value: Number(value) };
+  return { kind: "text", value };
 }
 
 export async function StatsBar() {
-  const { items } = await getContent('home.stats');
+  const { items } = await getContent("home.stats");
 
   return (
     /*
-     * Pulled up over the hero's foot rather than butted against it, and
-     * translucent rather than solid: the mark is on a sticky layer behind this
-     * band now, and a solid surface would have hidden the middle third of the
-     * move it makes.
+     * Pulled up over the hero's foot rather than butted against it.
      *
      * The hero's vignette already fades its bottom to near-black, and this band
      * is a lighter surface with a rule on top of it, so the two met as a hard
@@ -46,7 +44,7 @@ export async function StatsBar() {
      * the hero in paint order despite the negative margin.
      */
     <section
-      className="border-line relative -mt-10 border-b bg-[rgb(23_16_33/0.72)] backdrop-blur-[2px] md:-mt-14"
+      className="border-line bg-surface relative -mt-10 border-b md:-mt-14"
       aria-label="ההתחייבויות שלנו"
       /*
        * Removing the top rule was not enough on its own: the band's surface is
@@ -56,8 +54,8 @@ export async function StatsBar() {
        * figures below are untouched and the edge simply stops existing.
        */
       style={{
-        maskImage: 'linear-gradient(to bottom, transparent, #000 4rem)',
-        WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 4rem)',
+        maskImage: "linear-gradient(to bottom, transparent, #000 4rem)",
+        WebkitMaskImage: "linear-gradient(to bottom, transparent, #000 4rem)",
       }}
     >
       <Container>
@@ -73,8 +71,8 @@ export async function StatsBar() {
             // than all four landing at once.
             const transition = {
               duration: 1.8,
-              ease: 'easeOut',
-              type: 'tween',
+              ease: "easeOut",
+              type: "tween",
               delay: i * 0.12,
             } as const;
 
@@ -84,19 +82,31 @@ export async function StatsBar() {
                   className="font-latin text-fg text-3xl leading-none font-extrabold tracking-tight sm:text-4xl md:text-[2.75rem]"
                   dir="ltr"
                 >
-                  {figure.kind === 'number' ? (
-                    <CountingNumber target={figure.value} startOnView transition={transition} />
+                  {figure.kind === "number" ? (
+                    <CountingNumber
+                      target={figure.value}
+                      startOnView
+                      transition={transition}
+                    />
                   ) : null}
 
-                  {figure.kind === 'range' ? (
+                  {figure.kind === "range" ? (
                     <>
-                      <CountingNumber target={figure.from} startOnView transition={transition} />
+                      <CountingNumber
+                        target={figure.from}
+                        startOnView
+                        transition={transition}
+                      />
                       <span className="text-muted mx-0.5">-</span>
-                      <CountingNumber target={figure.to} startOnView transition={transition} />
+                      <CountingNumber
+                        target={figure.to}
+                        startOnView
+                        transition={transition}
+                      />
                     </>
                   ) : null}
 
-                  {figure.kind === 'text' ? (
+                  {figure.kind === "text" ? (
                     <span dir="rtl" className="font-heading">
                       {figure.value}
                     </span>
@@ -109,7 +119,9 @@ export async function StatsBar() {
                   ) : null}
                 </div>
 
-                <p className="text-muted mt-3 text-sm leading-snug text-balance">{stat.label}</p>
+                <p className="text-muted mt-3 text-sm leading-snug text-balance">
+                  {stat.label}
+                </p>
               </li>
             );
           })}

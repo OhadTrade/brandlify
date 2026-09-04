@@ -1,8 +1,8 @@
-import { Reveal } from '@/components/motion/Reveal';
-import { ScrubLine } from '@/components/motion/ScrubLine';
-import { Container } from '@/components/ui/Container';
-import { SectionHeading } from '@/components/ui/SectionHeading';
-import { getContent } from '@/lib/queries';
+import { Reveal } from "@/components/motion/Reveal";
+import { ScrubLine } from "@/components/motion/ScrubLine";
+import { Container } from "@/components/ui/Container";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { getContent } from "@/lib/queries";
 
 /**
  * How it works.
@@ -28,10 +28,14 @@ import { getContent } from '@/lib/queries';
  * sequence the section describes.
  */
 export async function Process() {
-  const process = await getContent('home.process');
+  const process = await getContent("home.process");
 
   return (
-    <section className="section-y" aria-labelledby="process-heading">
+    <section
+      data-flow="fade"
+      className="section-y"
+      aria-labelledby="process-heading"
+    >
       <Container>
         {/*
           Both columns are sized, not stretched, and the pair is centred. A
@@ -47,7 +51,12 @@ export async function Process() {
             className="lg:sticky lg:top-[calc(var(--nav-height)+3rem)]"
           />
 
-          <Reveal as="ol" y={20} stagger={0.07} className="relative flex flex-col gap-9">
+          <Reveal
+            as="ol"
+            y={20}
+            stagger={0.07}
+            className="relative flex flex-col gap-9"
+          >
             {/*
               The rail. Sits at the centre of the marker column and stops short
               at both ends so it emerges from the first marker rather than
@@ -76,7 +85,7 @@ export async function Process() {
                   className="border-line chamfer bg-base font-latin text-violet relative z-10 flex h-12 w-12 items-center justify-center border text-lg font-extrabold"
                   dir="ltr"
                 >
-                  {String(i + 1).padStart(2, '0')}
+                  {String(i + 1).padStart(2, "0")}
                 </span>
 
                 <div className="flex flex-col gap-2 pt-1.5">

@@ -1,7 +1,7 @@
-import { Container } from '@/components/ui/Container';
-import { Icon } from '@/components/ui/Icon';
-import { SectionHeading } from '@/components/ui/SectionHeading';
-import { getContent, getFaqs } from '@/lib/queries';
+import { Container } from "@/components/ui/Container";
+import { Icon } from "@/components/ui/Icon";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { getContent, getFaqs } from "@/lib/queries";
 
 /**
  * FAQ accordion.
@@ -11,21 +11,25 @@ import { getContent, getFaqs } from '@/lib/queries';
  * accordion would ship state, ARIA and key handling to do worse.
  */
 export async function Faq() {
-  const [faqs, copy] = await Promise.all([getFaqs(), getContent('home.faq')]);
+  const [faqs, copy] = await Promise.all([getFaqs(), getContent("home.faq")]);
   if (faqs.length === 0) return null;
 
   const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
     mainEntity: faqs.map((faq) => ({
-      '@type': 'Question',
+      "@type": "Question",
       name: faq.question,
-      acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+      acceptedAnswer: { "@type": "Answer", text: faq.answer },
     })),
   };
 
   return (
-    <section className="section-y" aria-labelledby="faq-heading">
+    <section
+      data-flow="lift"
+      className="section-y"
+      aria-labelledby="faq-heading"
+    >
       <Container className="flex flex-col gap-12 lg:flex-row lg:gap-16">
         <div className="lg:w-2/5">
           <SectionHeading
@@ -52,7 +56,9 @@ export async function Faq() {
                   />
                 </span>
               </summary>
-              <p className="text-muted pb-6 pe-14 text-[0.9375rem] leading-relaxed">{faq.answer}</p>
+              <p className="text-muted pb-6 pe-14 text-[0.9375rem] leading-relaxed">
+                {faq.answer}
+              </p>
             </details>
           ))}
         </div>
