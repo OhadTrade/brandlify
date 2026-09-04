@@ -16,8 +16,11 @@ export const metadata: Metadata = {
  *
  * Every item listed here is something actually implemented in this codebase —
  * the contrast figures come from `npm run contrast`, the reduced-motion
- * behaviour from the animation engine's tier rules. The coordinator's details
- * are the one thing still missing and are marked as such rather than invented.
+ * behaviour from the animation engine's tier rules.
+ *
+ * The coordinator is the owner. In a one-person business that is the honest
+ * answer, and the regulations ask for a named person with contact details, not
+ * for a dedicated role.
  */
 export default function AccessibilityPage() {
   const updated = '2 בספטמבר 2026';
@@ -33,13 +36,6 @@ export default function AccessibilityPage() {
 
       <section className="section-y">
         <Container>
-          <div className="border-line rounded-card mb-10 border border-dashed p-5">
-            <p className="text-muted text-sm leading-relaxed">
-              <strong className="text-fg">חסרים פרטי רכז הנגישות.</strong> החוק מחייב לציין שם ודרכי
-              התקשרות של אדם מוגדר. יש להשלים לפני ההשקה.
-            </p>
-          </div>
-
           <Prose>
             <h2>המחויבות שלנו</h2>
             <p>
@@ -106,7 +102,7 @@ export default function AccessibilityPage() {
             <h2>רכז הנגישות</h2>
             <ul>
               <li>
-                <strong>שם:</strong> להשלמה
+                <strong>שם:</strong> אוהד קינן
               </li>
               <li>
                 <strong>טלפון:</strong>{' '}
@@ -121,6 +117,14 @@ export default function AccessibilityPage() {
                 </a>
               </li>
             </ul>
+
+            <h2>מועד ההצהרה ואופן הבדיקה</h2>
+            <p>
+              הצהרה זו נערכה ביום {updated}. הנגישות נבנתה לתוך האתר במהלך הפיתוח ונבדקה בבדיקה
+              פנימית: ניגודיות הצבעים נמדדה מול הערכים שבתקן, הניווט נבדק במקלדת בלבד, וההתנהגות
+              תחת העדפת צמצום תנועה נבדקה בדפדפן. <strong>טרם בוצע סקר נגישות חיצוני</strong> על ידי
+              מורשה נגישות. אם וכאשר ייערך, נעדכן כאן את מועדו ואת שם עורכו.
+            </p>
 
             <h2>הסדרי נגישות בשירות</h2>
             <p>
