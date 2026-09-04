@@ -61,6 +61,23 @@ export const leadSchema = z.object({
     .boolean()
     .refine((value) => value === true, 'צריך לאשר את מדיניות הפרטיות כדי שנוכל לחזור אליך'),
 
+  /*
+   * Advertising consent, and nothing else.
+   *
+   * Deliberately a separate field from `consent` above, because section 30A of
+   * the Communications Law treats a promotional message as a different thing
+   * from a reply to an enquiry. Agreeing to be called back about a quote is not
+   * agreement to receive a newsletter, and reading it as such is the specific
+   * thing the section prohibits.
+   *
+   * Optional, defaults to false, and never pre-ticked. Someone who leaves it
+   * alone still gets their answer; they just do not get a campaign.
+   */
+  marketing_consent: z
+    .boolean()
+    .nullish()
+    .transform((value) => value === true),
+
   // Context, collected silently.
   source_page: z.string().max(300).nullish().transform((v) => v || null),
   utm_source: z.string().max(120).nullish().transform((v) => v || null),
@@ -86,5 +103,6 @@ export const emptyLead: LeadInput = {
   services_interested: [],
   message: '',
   consent: false,
+  marketing_consent: false,
   company_website: '',
 };

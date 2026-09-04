@@ -366,6 +366,38 @@ export function LeadForm() {
           ) : null}
         </div>
 
+        {/*
+          Advertising consent, second and separate.
+          
+          Section 30A of the Communications Law is specific about this: consent
+          to receive a promotional message has to be given for that purpose, so
+          folding it into the box above ("we will call you back") would not be
+          consent at all. It is optional, it carries no asterisk, and leaving it
+          alone costs the visitor nothing - they still get their answer.
+        */}
+        <div>
+          <label htmlFor="marketing_consent" className="flex cursor-pointer items-start gap-3">
+            <span className="relative mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center">
+              <input
+                id="marketing_consent"
+                type="checkbox"
+                className="peer border-line bg-elevated checked:bg-cta h-5 w-5 appearance-none rounded-[4px] border transition-colors duration-200"
+                {...register('marketing_consent')}
+              />
+              <Icon
+                aria-hidden
+                name="check"
+                strokeWidth={3.5}
+                className="pointer-events-none absolute h-3 w-3 text-white opacity-0 peer-checked:opacity-100"
+              />
+            </span>
+            <span className="text-muted text-sm leading-relaxed">
+              בנוסף, אני מאשר/ת לקבל מכם דיוור פרסומי במייל — טיפים, מדריכים ומבצעים. לא חובה, ובכל
+              הודעה יופיע קישור הסרה בלחיצה אחת.
+            </span>
+          </label>
+        </div>
+
         {serverError ? (
           <p role="alert" className="border-magenta text-pink rounded-btn border p-4 text-sm">
             {serverError}

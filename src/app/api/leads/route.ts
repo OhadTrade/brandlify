@@ -110,6 +110,11 @@ export async function POST(request: Request) {
     services_interested: lead.services_interested,
     message: lead.message,
     consent: true,
+    // Written together, because the database rejects the flag without the date:
+    // a boolean with nothing behind it does not discharge the burden of proving
+    // consent that section 30A puts on the sender.
+    marketing_consent: lead.marketing_consent,
+    marketing_consent_at: lead.marketing_consent ? new Date().toISOString() : null,
     source_page: lead.source_page,
     utm_source: lead.utm_source,
     utm_medium: lead.utm_medium,

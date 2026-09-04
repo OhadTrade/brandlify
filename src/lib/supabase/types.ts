@@ -97,6 +97,12 @@ export type LeadRow = Timestamps & {
   message: string | null;
   consent: boolean;
   consent_at: string;
+  /** Section 30A advertising consent. Independent of `consent`. */
+  marketing_consent: boolean;
+  marketing_consent_at: string | null;
+  /** Set on opt-out. Suppresses sending; `marketing_consent` is left as it was. */
+  unsubscribed_at: string | null;
+  unsubscribe_token: string;
   source_page: string | null;
   utm_source: string | null;
   utm_medium: string | null;
@@ -115,6 +121,10 @@ export type LeadInsert = {
   services_interested?: string[];
   message?: string | null;
   consent: true;
+  /** Optional and defaulted false. The public role has no column privilege on
+   *  these two, so only the service-role path can set them. */
+  marketing_consent?: boolean;
+  marketing_consent_at?: string | null;
   source_page?: string | null;
   utm_source?: string | null;
   utm_medium?: string | null;
