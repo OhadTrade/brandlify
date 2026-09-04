@@ -281,26 +281,90 @@
   }
 
   /*
-     Two layers. The hairline is the cut itself; the wide, very faint band under
-     it is the light coming off it. At one pixel and half opacity the line was
-     technically present and visually absent - on this background a single
-     magenta pixel row simply does not register, and an edge nobody sees is not
-     an edge.
+     The seam as a light source.
+
+     The reference heroes that make this look work all do the same thing: one
+     large directional light that organises the whole composition. They do it
+     with an arc or a nebula, which is the most-copied dark-hero background
+     there is. This gets the same effect from the cut that is already here, so
+     the light has a reason to be at that angle and cannot be lifted without
+     lifting the logo it comes from.
+
+     Four layers, outermost first in reading order below because CSS paints the
+     first background layer on top:
+
+       1. the cut itself, one pixel, near-white magenta
+       2. a tight hot core, mostly on the mark's side
+       3. the spill, reaching far into the mark's side and fading out
+       4. a short bleed on the copy's side
+
+     The asymmetry is the whole point and it is not decorative. The mask puts
+     the mark below `--seam-at` and the copy above it, so throwing the light
+     down-gradient lights the object and leaves the text on unlit ground. A
+     symmetric glow would have washed the headline and cost contrast for
+     nothing: light falling on the reader is glare, light falling on the subject
+     is modelling.
+
+     The radial mask is what stops it reading as a printed stripe. A band of
+     even brightness from corner to corner is a graphic; a band that is bright
+     in the middle and gone at the ends is a light with a position.
   */
   .hero-diagonal-seam {
     background:
       linear-gradient(
         var(--seam-angle),
         transparent calc(var(--seam-at) - 1px),
-        rgb(230 53 240 / 0.85) var(--seam-at),
+        rgb(248 132 236 / 0.9) var(--seam-at),
         transparent calc(var(--seam-at) + 1px)
       ),
       linear-gradient(
         var(--seam-angle),
-        transparent calc(var(--seam-at) - 70px),
-        rgb(131 47 240 / 0.11) var(--seam-at),
-        transparent calc(var(--seam-at) + 70px)
+        transparent calc(var(--seam-at) - 110px),
+        rgb(230 53 240 / 0.17) var(--seam-at),
+        transparent calc(var(--seam-at) + 26px)
+      ),
+      linear-gradient(
+        var(--seam-angle),
+        transparent calc(var(--seam-at) - 420px),
+        rgb(131 47 240 / 0.13) var(--seam-at),
+        transparent calc(var(--seam-at) + 60px)
       );
+
+    -webkit-mask-image: radial-gradient(
+      ellipse 62% 78% at 50% 44%,
+      #000 12%,
+      rgb(0 0 0 / 0.45) 52%,
+      transparent 88%
+    );
+    mask-image: radial-gradient(
+      ellipse 62% 78% at 50% 44%,
+      #000 12%,
+      rgb(0 0 0 / 0.45) 52%,
+      transparent 88%
+    );
+  }
+
+  /*
+     A very slow breath. Opacity only, so the compositor handles it and nothing
+     repaints; the amplitude is small enough that nobody will consciously see it
+     move, which is the intent - a light that is perfectly static reads as a
+     printed layer. Off entirely under reduced motion, like everything else on
+     this site.
+  */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-diagonal-seam {
+      animation: seam-breathe 18s ease-in-out infinite;
+    }
+  }
+
+  @keyframes seam-breathe {
+    0%,
+    100% {
+      opacity: 0.82;
+    }
+    50% {
+      opacity: 1;
+    }
   }
 }
 
