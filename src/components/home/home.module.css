@@ -1,0 +1,274 @@
+.home {
+  --color-base: #0b0b10;
+  --color-surface: #12131a;
+  --color-elevated: #1c1d26;
+  --color-fg: #f7f7f4;
+  --color-muted: #b3b2c0;
+  --home-coral: #ff7a6b;
+  --home-pink: #ff4fb8;
+  --home-violet: #7b4dff;
+  --home-highlight: #d7ccff;
+  --radius-card: 20px;
+  --radius-btn: 999px;
+  isolation: isolate;
+  color: var(--color-fg);
+  background-color: var(--color-base);
+}
+
+.home :focus-visible {
+  outline: 3px solid var(--home-highlight);
+  outline-offset: 5px;
+}
+
+.home section {
+  scroll-margin-block-start: calc(var(--nav-height) + 1.5rem);
+}
+
+.hero {
+  position: relative;
+  margin-block-start: calc(-1 * var(--nav-height));
+  display: grid;
+  align-items: center;
+  min-block-size: 100svh;
+  overflow: clip;
+}
+
+.heroLayout {
+  position: relative;
+  display: grid;
+  gap: 2rem;
+  padding-block: calc(var(--nav-height) + 2rem) 5rem;
+}
+
+.heroCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+  min-inline-size: 0;
+}
+
+.servicesLine {
+  max-inline-size: 42ch;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--home-highlight);
+  line-height: 1.7;
+}
+
+.heroTitle {
+  max-inline-size: 100%;
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 4.8vw, 4.25rem);
+  font-weight: 800;
+  line-height: 1.16;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.heroTitle span {
+  color: var(--home-coral);
+}
+
+.heroSubtitle {
+  max-inline-size: 38ch;
+  color: var(--color-muted);
+  font-size: clamp(1.125rem, 1.6vw, 1.25rem);
+  line-height: 1.7;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  padding-block-start: 0.5rem;
+  inline-size: 100%;
+}
+
+.heroActions .primaryAction,
+.heroActions .secondaryAction {
+  min-block-size: 3.5rem;
+  border-radius: 999px;
+  translate: none;
+  transition: translate 180ms var(--ease-snap), scale 160ms var(--ease-snap), background-color 180ms var(--ease-snap), border-color 180ms var(--ease-snap);
+}
+
+.heroActions .primaryAction {
+  color: #0b0b10;
+  background: var(--home-coral);
+  border-color: transparent;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.4);
+}
+
+.heroActions .secondaryAction {
+  color: var(--color-fg);
+  background: var(--color-base);
+  border: 1px solid #646372;
+  box-shadow: none;
+}
+
+.mobileMark {
+  position: relative;
+  block-size: clamp(12rem, 32svh, 20rem);
+}
+
+.heroLight {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 20% 45%, rgb(255 122 107 / 0.06), transparent 55%);
+}
+
+.servicesGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  list-style: none;
+}
+
+.servicesGrid > li {
+  min-inline-size: 0;
+}
+
+.serviceCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+  block-size: 100%;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border: 1px solid #383842;
+  border-radius: 20px;
+  color: var(--color-fg, #f7f7f4);
+  background: #12131a;
+  transition: border-color 180ms var(--ease-snap), transform 180ms var(--ease-snap);
+}
+
+.servicesGrid > li:nth-child(odd) .serviceCard {
+  background: linear-gradient(150deg, rgb(215 204 255 / 0.06), transparent 65%), #12131a;
+}
+
+.servicesGrid > li:first-child .serviceCard {
+  background: linear-gradient(130deg, rgb(255 122 107 / 0.09), transparent 65%), #12131a;
+}
+
+.serviceIcon {
+  display: grid;
+  place-items: center;
+  inline-size: 3rem;
+  block-size: 3rem;
+  border: 1px solid #646372;
+  border-radius: 12px;
+  color: #d7ccff;
+}
+
+.serviceDescription {
+  flex: 1;
+  max-inline-size: 48ch;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--color-muted, #b3b2c0);
+}
+
+.serviceLink {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-block-size: 2rem;
+  font-weight: 600;
+  color: #ff7a6b;
+}
+
+@media (min-width: 768px) {
+  .servicesGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .servicesGrid > li:first-child:nth-last-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .heroLayout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    padding-block-end: 7rem;
+  }
+
+  .heroCopy {
+    padding-inline-end: clamp(1rem, 3vw, 3rem);
+  }
+
+  .mobileMark {
+    display: none;
+  }
+
+  /* Existing MarkStage owns the visual; this shields the copy on the RTL side. */
+  .heroLight {
+    background: linear-gradient(to left, #0b0b10 0%, rgb(11 11 16 / 0.94) 32%, transparent 62%);
+  }
+}
+
+@media (max-width: 479px) {
+  .heroActions {
+    flex-direction: column;
+  }
+
+  .heroActions > * {
+    inline-size: 100%;
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .heroActions .primaryAction:hover {
+    background: #ff9488;
+  }
+
+  .heroActions .secondaryAction:hover {
+    border-color: #d7ccff;
+  }
+
+  .serviceCard:hover {
+    border-color: #d7ccff;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .serviceCard:hover {
+    transform: translateY(-3px);
+  }
+
+  .heroActions .primaryAction:hover,
+  .heroActions .secondaryAction:hover {
+    translate: 0 -2px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .heroLight {
+    animation: lightArrival 700ms var(--ease-snap) both;
+  }
+}
+
+@keyframes lightArrival {
+  from { opacity: 0.8; }
+  to { opacity: 1; }
+}
+
+@media (prefers-contrast: more) {
+  .home { --color-muted: #d7ccff; }
+  .serviceCard { border-color: #b3b2c0; }
+}
+
+@media (forced-colors: active) {
+  .heroTitle span,
+  .serviceIcon,
+  .serviceLink { color: CanvasText; }
+  .heroActions .primaryAction,
+  .heroActions .secondaryAction,
+  .serviceCard { border: 1px solid ButtonText; }
+  .heroLight { display: none; }
+}
