@@ -3,6 +3,7 @@
 .headerWrap .header { background:rgb(247 247 244 / .95); backdrop-filter:blur(14px); }
 .progress { position:absolute; bottom:0; inset-inline:0; height:2px; background:linear-gradient(90deg,#633590,#b64077,#c56555); transform:scaleX(0); transform-origin:right; pointer-events:none; }
 .header a[aria-current=page] { text-decoration:underline; text-underline-offset:7px; }
+.headerWrap .progress { z-index:41; }
 @media(max-width:1023px) {
   .headerWrap .header>nav,.headerWrap .cta { display:none; }
   .headerWrap .menu { display:block; direction:rtl; }
