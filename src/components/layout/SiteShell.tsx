@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react';
 import { Analytics } from '@/components/layout/Analytics';
-import { Footer } from '@/components/layout/Footer';
+import { StudioChrome } from '@/components/layout/StudioChrome';
 import { OrganizationSchema } from '@/components/layout/OrganizationSchema';
-import { Navbar } from '@/components/layout/Navbar';
 import { SkipLink } from '@/components/layout/SkipLink';
 import { WhatsAppFab } from '@/components/layout/WhatsAppFab';
 import { SmoothScroll } from '@/components/motion/SmoothScroll';
@@ -21,11 +20,11 @@ export function SiteShell({ children }: { children: ReactNode }) {
     <>
       <SkipLink />
       <SmoothScroll />
-      <Navbar />
+      <StudioChrome />
       <main id="main" className="pt-(--nav-height)">
         {children}
       </main>
-      <Footer />
+      <StudioChrome footer />
       <WhatsAppFab />
       <OrganizationSchema />
       <Analytics />
