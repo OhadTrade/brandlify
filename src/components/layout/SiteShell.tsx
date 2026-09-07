@@ -5,6 +5,7 @@ import { OrganizationSchema } from '@/components/layout/OrganizationSchema';
 import { SkipLink } from '@/components/layout/SkipLink';
 import { WhatsAppFab } from '@/components/layout/WhatsAppFab';
 import { SmoothScroll } from '@/components/motion/SmoothScroll';
+import theme from './site-theme.module.css';
 
 /**
  * The public site's chrome.
@@ -17,7 +18,7 @@ import { SmoothScroll } from '@/components/motion/SmoothScroll';
  */
 export function SiteShell({ children }: { children: ReactNode }) {
   return (
-    <>
+    <div className={theme.site}>
       <SkipLink />
       <SmoothScroll />
       <StudioChrome />
@@ -28,6 +29,6 @@ export function SiteShell({ children }: { children: ReactNode }) {
       <WhatsAppFab />
       <OrganizationSchema />
       <Analytics />
-    </>
+    </div>
   );
 }
