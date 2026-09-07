@@ -57,9 +57,9 @@
 }
 
 .heroTitle {
-  max-inline-size: 12ch;
+  max-inline-size: 100%;
   font-family: var(--font-heading);
-  font-size: clamp(2.5rem, 5.3vw, 4.5rem);
+  font-size: clamp(2.5rem, 4.8vw, 4.25rem);
   font-weight: 800;
   line-height: 1.16;
   letter-spacing: -0.025em;
