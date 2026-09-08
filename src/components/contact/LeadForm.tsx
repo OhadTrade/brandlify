@@ -41,7 +41,7 @@ declare global {
  * free text or a multiple choice backed by `services_interested text[]`, so a
  * Radix Select would have been a runtime dependency with nothing to select.
  */
-export function LeadForm() {
+export function LeadForm({ initialService }: { initialService?: string }) {
   const pathname = usePathname();
   const [status, setStatus] = useState<Status>('idle');
   // Flipped in an effect, so it is only ever true once this component is live in
@@ -59,6 +59,8 @@ export function LeadForm() {
     handleSubmit,
     reset,
     setError,
+    setValue,
+    getFieldState,
     formState: { errors },
     // Three generics because the schema transforms: the form holds raw input
     // (LeadInput), the resolver hands the submit handler parsed output
@@ -66,11 +68,18 @@ export function LeadForm() {
     // being string|undefined versus string|null.
   } = useForm<LeadInput, unknown, LeadParsed>({
     resolver: zodResolver(leadSchema),
-    defaultValues: emptyLead,
+    defaultValues: { ...emptyLead, services_interested: initialService ? [initialService] : [] },
     mode: 'onTouched',
   });
 
   useEffect(() => setHydrated(true), []);
+
+  // A new campaign link can update the suggestion, but never a visitor's choices.
+  useEffect(() => {
+    if (!getFieldState('services_interested').isDirty) {
+      setValue('services_interested', initialService ? [initialService] : []);
+    }
+  }, [initialService, getFieldState, setValue]);
 
   // Turnstile renders itself once its script is on the page.
   useEffect(() => {
@@ -79,7 +88,7 @@ export function LeadForm() {
       if (!window.turnstile || !turnstileBox.current || widgetId.current) return;
       widgetId.current = window.turnstile.render(turnstileBox.current, {
         sitekey: TURNSTILE_SITE_KEY,
-        theme: 'dark',
+        theme: 'light',
         language: 'he',
         callback: (token: string) => {
           turnstileToken.current = token;
@@ -166,7 +175,7 @@ export function LeadForm() {
         </span>
         <h2 className="text-h3 text-fg">קיבלנו!</h2>
         <p className="text-muted max-w-sm text-[0.9375rem] leading-relaxed">
-          נחזור אליך תוך 24 שעות בימי עסקים. אם זה דחוף — פשוט תתקשר, אנחנו עונים.
+          נחזור אליך תוך 24-48 שעות בימי עסקים. אפשר גם ליצור איתנו קשר ישירות.
         </p>
         <button
           type="button"
@@ -194,8 +203,14 @@ export function LeadForm() {
         onSubmit={onSubmit}
         method="post"
         noValidate
-        className="border-line bg-surface rounded-card space-y-7 border p-6 md:p-10"
+        aria-labelledby="lead-form-heading"
+        aria-busy={status === 'submitting'}
+        className="border-line bg-elevated rounded-card space-y-7 border p-6 md:p-10"
       >
+        <div>
+          <h2 id="lead-form-heading" className="text-h3 text-fg">מתחילים בכמה מילים.</h2>
+          <p className="text-muted mt-3 text-sm leading-relaxed">מה העסק צריך עכשיו? נשאיר מקום גם למה שעוד לא סגור. שדות עם * הם חובה.</p>
+        </div>
         {/* Honeypot. Hidden from people, irresistible to bots. */}
         <div aria-hidden className="absolute h-px w-px overflow-hidden opacity-0">
           <label htmlFor="company_website">אל תמלא שדה זה</label>
@@ -293,7 +308,7 @@ export function LeadForm() {
             {services.map((service) => (
               <label
                 key={service.slug}
-                className="border-line text-muted rounded-btn hover:border-line-strong has-checked:border-magenta has-checked:text-fg ease-snap cursor-pointer border px-4 py-2.5 text-sm font-semibold transition-[color,border-color,background-color,scale] duration-200 active:scale-[0.97] active:duration-75 has-checked:bg-[rgb(230_53_240/0.08)] motion-reduce:transition-none motion-reduce:active:scale-100"
+                className="border-line text-muted rounded-btn hover:border-line-strong has-checked:border-magenta has-checked:text-fg has-focus-visible:outline-2 has-focus-visible:outline-offset-4 has-focus-visible:outline-magenta ease-snap cursor-pointer border px-4 py-2.5 text-sm font-semibold transition-[color,border-color,background-color] duration-200 has-checked:bg-[rgb(148_52_103/0.06)] motion-reduce:transition-none"
               >
                 <input
                   type="checkbox"
@@ -315,10 +330,11 @@ export function LeadForm() {
             placeholder="מה העסק עושה, מה חסר לך היום, ולאן אתה רוצה להגיע."
             className="mt-2"
             aria-invalid={Boolean(errors.message)}
+            aria-describedby={errors.message ? 'message-error' : undefined}
             {...register('message')}
           />
           {errors.message ? (
-            <p className="text-pink mt-1.5 text-sm">{errors.message.message}</p>
+            <p id="message-error" className="text-pink mt-1.5 text-sm">{errors.message.message}</p>
           ) : null}
         </div>
 
@@ -409,7 +425,7 @@ export function LeadForm() {
           disabled={status === 'submitting' || !hydrated}
           className="bg-cta rounded-btn font-heading shadow-glow-violet hover:shadow-glow-magenta ease-snap flex h-14 w-full items-center justify-center gap-2 text-lg font-bold text-white transition-[box-shadow,scale] duration-200 active:scale-[0.98] active:duration-75 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none motion-reduce:active:scale-100"
         >
-          {status === 'submitting' ? 'שולח…' : hydrated ? 'שליחה' : 'טוען…'}
+          {status === 'submitting' ? 'שולח…' : hydrated ? 'בואו נדבר על הפרויקט' : 'טוען…'}
           {status === 'submitting' || !hydrated ? null : <Icon name="arrow" className="h-5 w-5" />}
         </button>
 

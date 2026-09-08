@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
+import Link from 'next/link';
 import { PageHero } from '@/components/layout/PageHero';
 import { Reveal } from '@/components/motion/Reveal';
 import { FinalCta } from '@/components/sections/FinalCta';
@@ -6,6 +8,7 @@ import { Container } from '@/components/ui/Container';
 import { Icon } from '@/components/ui/Icon';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { getAuthoredContent, getContent, getServices } from '@/lib/queries';
+import styles from '@/components/sections/studio-pages.module.css';
 
 export const revalidate = 300;
 
@@ -29,11 +32,14 @@ export default async function AboutPage() {
   return (
     <>
       <PageHero
-        eyebrow="About"
-        title="סוכנות אחת, במקום חמישה ספקים."
+        eyebrow="The Brandlify approach"
+        title="חשיבה אחת. כל החיבורים."
         lead="Brandlify מרכזת את כל מה שעסק צריך כדי להיראות ולהימצא ברשת — בנייה, מיתוג, שיווק, קידום ואוטומציות — תחת גג אחד ובעברית."
         crumbs={[{ href: '/about', label: 'אודות' }]}
-      />
+        visual={<Image src="/brand/flowing-b.webp" alt="" width={600} height={600} priority sizes="(min-width: 901px) 40vw, 80vw" />}
+      >
+        <a href="#how-heading" className={styles.introLink}>כך אנחנו עובדים <Icon name="arrow" className="h-4 w-4" /></a>
+      </PageHero>
 
       {story ? (
         <section className="section-y" aria-labelledby="story-heading">
@@ -54,31 +60,20 @@ export default async function AboutPage() {
         className="section-y bg-surface border-line border-y"
         aria-labelledby="what-we-do-heading"
       >
-        <Container className="flex flex-col gap-12">
+        <Container className={styles.split}>
           <SectionHeading
             eyebrow="What we do"
             id="what-we-do-heading"
-            title="מה אנחנו עושים"
-            subtitle="חמישה תחומים שמדברים אחד עם השני, במקום חמישה ספקים שמאשימים אחד את השני."
+            title="לא אוסף שירותים. מערכת שעובדת יחד."
+            subtitle="האתר, המותג, השיווק והאוטומציות מתוכננים סביב אותה מטרה עסקית. כל חיבור נבנה כחלק מהתמונה המלאה."
           />
-          <Reveal as="ul" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Reveal as="ul" className={styles.serviceList} y={16} stagger={0.06}>
             {services.map((service) => (
-              <li
-                key={service.slug}
-                className="border-line bg-elevated rounded-card flex items-start gap-4 border p-6"
-              >
-                <span
-                  aria-hidden
-                  className="border-line chamfer text-violet flex h-10 w-10 shrink-0 items-center justify-center border bg-[rgb(131_47_240/0.08)]"
-                >
-                  <Icon name={service.icon ?? 'globe'} className="h-5 w-5" />
-                </span>
-                <span>
-                  <span className="text-fg block font-bold">{service.title}</span>
-                  <span className="text-muted mt-1 block text-sm leading-relaxed">
-                    {service.short_desc}
-                  </span>
-                </span>
+              <li key={service.slug}>
+                <Link href={`/services/${service.slug}`} className={styles.serviceLink}>
+                  <div><h3>{service.title}</h3><p>{service.short_desc}</p></div>
+                  <Icon name="arrow" className="h-5 w-5" />
+                </Link>
               </li>
             ))}
           </Reveal>
@@ -93,24 +88,14 @@ export default async function AboutPage() {
             title={process.title}
             subtitle={process.subtitle}
           />
-          <Reveal as="ol" className="grid gap-px sm:grid-cols-2 lg:grid-cols-3">
+          <Reveal as="ol" className={styles.process} y={16} stagger={0.06}>
             {process.steps.map((step, i) => (
-              <li
-                key={step.title}
-                className="bg-surface relative overflow-hidden p-8 outline outline-[color:var(--color-line)]"
-              >
-                <span
-                  aria-hidden
-                  className="font-latin pointer-events-none absolute top-5 end-6 text-[3.5rem] leading-none font-extrabold text-[rgb(250_250_252/0.05)] select-none"
-                  dir="ltr"
-                >
+              <li key={step.title}>
+                <span aria-hidden className={styles.processNumber}>
                   {String(i + 1).padStart(2, '0')}
                 </span>
-                <div className="relative flex flex-col gap-3">
-                  <span aria-hidden className="bg-brand h-1 w-10 rounded-full" />
-                  <h3 className="text-h3 text-fg">{step.title}</h3>
-                  <p className="text-muted text-[0.9375rem] leading-relaxed">{step.description}</p>
-                </div>
+                <h3>{step.title}</h3>
+                <p>{step.description}</p>
               </li>
             ))}
           </Reveal>
@@ -121,30 +106,17 @@ export default async function AboutPage() {
         className="section-y bg-surface border-line border-y"
         aria-labelledby="commitments-heading"
       >
-        <Container className="flex flex-col gap-12">
+        <Container className={styles.split}>
           <SectionHeading
             eyebrow="Our commitments"
             id="commitments-heading"
             title={promises.title}
           />
-          <Reveal as="ul" className="grid gap-5 sm:grid-cols-2">
+          <Reveal as="ul" className={styles.commitments} y={16} stagger={0.06}>
             {promises.items.map((item) => (
-              <li
-                key={item.title}
-                className="border-line bg-elevated rounded-card flex gap-4 border p-7"
-              >
-                <span
-                  aria-hidden
-                  className="border-line chamfer text-magenta flex h-11 w-11 shrink-0 items-center justify-center border bg-[rgb(230_53_240/0.08)]"
-                >
-                  <Icon name="check" className="h-5 w-5" strokeWidth={2.5} />
-                </span>
-                <span className="flex flex-col gap-1.5">
-                  <span className="text-fg text-lg font-extrabold">{item.title}</span>
-                  <span className="text-muted text-[0.9375rem] leading-relaxed">
-                    {item.description}
-                  </span>
-                </span>
+              <li key={item.title}>
+                <Icon name="check" className="h-5 w-5" strokeWidth={2.5} />
+                <div><h3>{item.title}</h3><p>{item.description}</p></div>
               </li>
             ))}
           </Reveal>

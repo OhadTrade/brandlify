@@ -63,7 +63,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         ]}
       >
         <div className="flex flex-wrap gap-4 pt-2">
-          <Button href="/contact" size="lg">
+          <Button href={`/contact?service=${encodeURIComponent(service.slug)}`} size="lg">
             לשיחת אפיון ללא עלות
             <Icon name="arrow" className="h-5 w-5" />
           </Button>
