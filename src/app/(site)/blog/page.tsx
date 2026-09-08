@@ -54,6 +54,7 @@ export default async function BlogPage() {
                     href={`/blog/${post.slug}`}
                     className={styles.post}
                   >
+                    {post.cover_image || index === 0 ? (
                       <div className={styles.postVisual} data-brand-art={post.cover_image ? undefined : true}>
                         <Image
                           src={post.cover_image ?? '/brand/digital-system.webp'}
@@ -63,6 +64,7 @@ export default async function BlogPage() {
                           sizes="(min-width: 901px) 50vw, 100vw"
                         />
                       </div>
+                    ) : null}
 
                     <div className={styles.postCopy}>
                       <div className={styles.postMeta}>

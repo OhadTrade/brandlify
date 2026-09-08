@@ -47,6 +47,7 @@
 
 .journal { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 56px 40px; list-style: none; }
 .journal li:first-child { grid-column: 1 / -1; }
+.journal li:not(:first-child) { border-top: 1px solid var(--color-line); padding-top: 28px; }
 .post { display: flex; flex-direction: column; gap: 24px; height: 100%; }
 .journal li:first-child .post { display: grid; grid-template-columns: 1.25fr 1fr; gap: 48px; align-items: center; }
 .postVisual { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 16px; background: #eeedea; }
