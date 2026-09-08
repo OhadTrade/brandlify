@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { HomeFlow } from '@/components/home/HomeFlow';
+import { HeroExperience } from '@/components/home/HeroExperience';
 import { SystemStory } from '@/components/home/SystemStory';
 import { getServices, getPublishedProjects } from '@/lib/queries';
 import { whatsappUrl } from '@/lib/site';
@@ -28,15 +29,19 @@ export default async function Home() {
 
   return (
     <div className={s.studio}>
-      <section className={s.hero} aria-labelledby="home-title">
+      <HeroExperience className={s.hero}>
         <div>
           <p className={s.eyebrow}>DIGITAL BUSINESS. BEYOND POSSIBLE.</p>
           <h1 id="home-title">לא עוד אתר.<br /><span>מערכת דיגיטלית</span><br />שבונה את<br />העסק קדימה.</h1>
           <p className={s.intro}>אתרים, שיווק, אוטומציות ופתרונות דיגיטליים.<br />הכל מחובר לצמיחה שלך.</p>
           <Actions />
         </div>
-        <Image className={s.art} src="/brand/flowing-b.webp" width={1200} height={1200} priority sizes="(max-width:760px) 100vw, 52vw" alt="סימן Brandlify זורם מזכוכית וכרום בגווני קורל, ורוד וסגול" />
-      </section>
+        <div className={s.heroDepth} data-hero-depth>
+          <div className={s.heroTilt} data-hero-tilt>
+            <Image className={s.art} src="/brand/flowing-b.webp" width={1200} height={1200} priority sizes="(max-width:760px) 100vw, 52vw" alt="סימן Brandlify זורם מזכוכית וכרום בגווני קורל, ורוד וסגול" />
+          </div>
+        </div>
+      </HeroExperience>
       <div className={s.industries}>
         <p>מערכות דיגיטליות לעסקים שרוצים להתקדם</p>
         <div dir="ltr">STARTUPS · ECOMMERCE · REAL ESTATE · CLINICS · AND MORE</div>

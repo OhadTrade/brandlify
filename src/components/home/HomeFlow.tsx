@@ -9,19 +9,6 @@ export function HomeFlow({ children }: { children: ReactNode }) {
     const { gsap, ScrollTrigger } = engine;
 
     mm.add(engine.MQ_DESKTOP, () => {
-      const story = root.querySelector<HTMLElement>('[data-system-story]');
-      const artwork = root.querySelector<HTMLElement>('[data-story-art]');
-      const progress = root.querySelector<HTMLElement>('[data-story-progress]');
-      if (story && artwork && progress) {
-        gsap.fromTo(artwork, { y: 24, rotate: -4, scale: 0.96 }, {
-          y: -24, rotate: 4, scale: 1.04, ease: 'none',
-          scrollTrigger: { trigger: story, start: 'top 65%', end: 'bottom 80%', scrub: 0.6, invalidateOnRefresh: true },
-        });
-        gsap.fromTo(progress, { scaleX: 0 }, {
-          scaleX: 1, ease: 'none',
-          scrollTrigger: { trigger: story, start: 'top center', end: 'bottom bottom', scrub: true, invalidateOnRefresh: true },
-        });
-      }
       root.querySelectorAll<HTMLElement>('[data-project-art]').forEach((art) => {
         gsap.fromTo(art, { yPercent: 5, scale: 1.06 }, {
           yPercent: -5, scale: 1, ease: 'none',
