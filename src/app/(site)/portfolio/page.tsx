@@ -63,7 +63,7 @@ export default async function PortfolioPage() {
                             'linear-gradient(to top, rgb(8 6 14 / 0.92), rgb(131 47 240 / 0.25) 60%, transparent)',
                         }}
                       />
-                      <span className="text-fg absolute inset-x-0 bottom-0 flex translate-y-2 items-center gap-2 p-5 text-sm font-semibold opacity-0 transition-[opacity,translate] duration-200 ease-snap group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:transform-none motion-reduce:transition-none">
+                      <span className="text-white absolute inset-x-0 bottom-0 flex translate-y-2 items-center gap-2 p-5 text-sm font-semibold opacity-0 transition-[opacity,translate] duration-200 ease-snap group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:transform-none motion-reduce:transition-none">
                         צפייה בפרויקט
                         <Icon name="arrow" className="h-4 w-4" />
                       </span>

@@ -1,0 +1,28 @@
+.site {
+  --color-base:#f7f7f4;
+  --color-surface:#eeedea;
+  --color-elevated:#fff;
+  --color-fg:#151a1d;
+  --color-muted:#595d64;
+  --color-line:#dcd9d6;
+  --color-line-strong:#8e888e;
+  --color-magenta:#943467;
+  --color-pink:#803b76;
+  --color-violet:#693b91;
+  --gradient-brand:linear-gradient(110deg,#a4483d,#a03975,#633590);
+  --gradient-cta:linear-gradient(#151a1d,#242b31);
+  --radius-card:20px;
+  --radius-btn:999px;
+  --shadow-glow-violet:0 4px 14px #151a1d12;
+  --shadow-glow-magenta:0 8px 22px #151a1d18;
+  color:var(--color-fg);
+  background:var(--color-base);
+  min-height:100svh;
+  color-scheme:light;
+}
+.site :global(.chamfer) { clip-path:none; border-radius:14px; }
+.site :global(.glass) { background:#f7f7f4ed; }
+.site :global(.section-y) { padding-block:clamp(64px,8vw,120px); }
+.site :global(.prose) { --tw-prose-body:#595d64; --tw-prose-headings:#151a1d; --tw-prose-links:#803b76; }
+.site :global(input),.site :global(textarea),.site :global(select) { color-scheme:light; }
+.site :global(section[id]),.site :global(main[id]) { scroll-margin-top:calc(var(--nav-height) + 20px); }
