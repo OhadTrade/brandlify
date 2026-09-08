@@ -4,6 +4,7 @@ import { TextReveal } from '@/components/motion/TextReveal';
 import { Container } from '@/components/ui/Container';
 import { Icon } from '@/components/ui/Icon';
 import { site } from '@/lib/site';
+import editorial from '@/components/sections/editorial.module.css';
 
 export type Crumb = { href: string; label: string };
 
@@ -19,12 +20,14 @@ export function PageHero({
   lead,
   crumbs = [],
   children,
+  visual,
 }: {
   eyebrow?: string;
   title: string;
   lead?: string;
   crumbs?: Crumb[];
   children?: ReactNode;
+  visual?: ReactNode;
 }) {
   const trail: Crumb[] = [{ href: '/', label: 'דף הבית' }, ...crumbs];
 
@@ -50,7 +53,8 @@ export function PageHero({
         }}
       />
 
-      <Container className="relative flex flex-col gap-6">
+      <Container className={visual ? `relative ${editorial.hero}` : 'relative'}>
+        <div className="flex flex-col gap-6">
         <nav aria-label="מיקום באתר">
           <ol className="text-muted flex flex-wrap items-center gap-2 text-sm">
             {trail.map((crumb, i) => (
@@ -86,6 +90,8 @@ export function PageHero({
         {lead ? <p className="text-muted max-w-2xl text-[1.0625rem] leading-relaxed">{lead}</p> : null}
 
         {children}
+        </div>
+        {visual ? <div className={editorial.heroVisual}>{visual}</div> : null}
       </Container>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />

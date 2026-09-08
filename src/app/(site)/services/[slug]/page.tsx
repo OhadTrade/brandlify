@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { Icon } from '@/components/ui/Icon';
 import { SectionHeading } from '@/components/ui/SectionHeading';
+import { ServiceArtwork } from '@/components/sections/ServiceArtwork';
+import editorial from '@/components/sections/editorial.module.css';
 import { services as serviceContent } from '@/content/services';
 import { getPublishedProjects, getServiceBySlug, getServices } from '@/lib/queries';
 
@@ -52,7 +54,9 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
     <>
       <PageHero
         eyebrow={service.title}
-        title={service.short_desc}
+        title={service.title}
+        lead={service.short_desc}
+        visual={<ServiceArtwork slug={service.slug} />}
         crumbs={[
           { href: '/services', label: 'שירותים' },
           { href: `/services/${service.slug}`, label: service.title },
@@ -70,7 +74,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
       {service.full_content ? (
         <section className="section-y" aria-labelledby="what-heading">
           <Container className="grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:gap-16">
-            <SectionHeading eyebrow="What it is" id="what-heading" title="מה זה בעצם" />
+            <SectionHeading eyebrow="The bigger picture" id="what-heading" title="הבסיס לשלב הבא בעסק." className={editorial.serviceOverview} />
             {/*
               Paragraphs, not one block. The copy grew from a single sentence
               into a real explanation, and a wall of eight lines with no breaks
