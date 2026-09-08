@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PageHero } from '@/components/layout/PageHero';
@@ -10,6 +9,8 @@ import { Container } from '@/components/ui/Container';
 import { Icon } from '@/components/ui/Icon';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { getProjectBySlug, getPublishedProjects } from '@/lib/queries';
+import { ProjectGallery } from '@/components/sections/ProjectGallery';
+import editorial from '@/components/sections/editorial.module.css';
 
 export const revalidate = 300;
 
@@ -90,31 +91,20 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
       </PageHero>
 
       {project.cover_image ? (
-        <section className="border-line border-b">
-          <Container className="py-10 md:py-14">
-            <div className="border-line rounded-card bg-base relative aspect-[16/9] overflow-hidden border">
-              <Image
-                src={project.cover_image}
-                alt={`${project.business_name} — תצוגה של הפרויקט`}
-                fill
-                priority
-                sizes="(min-width: 1280px) 1232px, 100vw"
-                className="object-cover"
-              />
-            </div>
-          </Container>
+        <section className={editorial.projectCover} aria-label="תצוגת הפרויקט">
+          <div><ProjectGallery images={[project.cover_image]} name={project.business_name} cover /></div>
         </section>
       ) : null}
 
       {blocks.length > 0 ? (
         <section className="section-y" aria-labelledby="story-heading">
-          <Container className="flex flex-col gap-12">
-            <SectionHeading eyebrow="Case study" id="story-heading" title="הסיפור המלא" />
-            <Reveal as="div" className="grid gap-px lg:grid-cols-3">
+          <Container className={editorial.caseStory}>
+            <SectionHeading eyebrow="Case study" id="story-heading" title="החשיבה שמאחורי התוצאה." className={editorial.caseTitle} />
+            <Reveal as="div" className={editorial.caseBlocks}>
               {blocks.map((block) => (
                 <article
                   key={block.key}
-                  className="bg-surface flex flex-col gap-4 p-8 outline outline-[color:var(--color-line)]"
+                  className="flex flex-col gap-4"
                 >
                   <h3 className="text-h3 text-brand-gradient">{block.label}</h3>
                   <p className="text-muted text-[0.9375rem] leading-relaxed whitespace-pre-line">
@@ -134,22 +124,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         >
           <Container className="flex flex-col gap-12">
             <SectionHeading eyebrow="Gallery" id="gallery-heading" title="גלריה" />
-            <Reveal as="ul" className="grid gap-5 sm:grid-cols-2">
-              {project.gallery.map((src, i) => (
-                <li
-                  key={src}
-                  className="border-line rounded-card bg-base relative aspect-[4/3] overflow-hidden border"
-                >
-                  <Image
-                    src={src}
-                    alt={`${project.business_name} — תמונה ${i + 1}`}
-                    fill
-                    sizes="(min-width: 640px) 50vw, 100vw"
-                    className="object-cover"
-                  />
-                </li>
-              ))}
-            </Reveal>
+            <ProjectGallery images={project.gallery} name={project.business_name} />
           </Container>
         </section>
       ) : null}
