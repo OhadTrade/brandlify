@@ -25,4 +25,4 @@
 .site :global(.section-y) { padding-block:clamp(64px,8vw,120px); }
 .site :global(.prose) { --tw-prose-body:#595d64; --tw-prose-headings:#151a1d; --tw-prose-links:#803b76; }
 .site :global(input),.site :global(textarea),.site :global(select) { color-scheme:light; }
-.site :global(section[id]),.site :global(main[id]) { scroll-margin-top:calc(var(--nav-height) + 20px); }
+.site :global(section[id]),.site :global(main[id]),.site :global(h2[id]),.site :global(h3[id]) { scroll-margin-top:calc(var(--nav-height) + 20px); }
