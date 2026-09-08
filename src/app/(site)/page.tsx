@@ -16,6 +16,13 @@ const steps = [
   ['עולים לאוויר ומשפרים', 'השקה, מדידה ואופטימיזציה לצמיחה.'],
 ];
 
+const questions = [
+  ['מאיפה מתחילים?', 'מהמטרה העסקית: מה אתם רוצים שהאתר יעזור להשיג, מי הקהל שלכם ומה כבר קיים היום. בשיחת ההיכרות נבחן את הצורך ונגדיר את הצעד הבא.'],
+  ['צריך את כל השירותים כדי להתחיל?', 'לא בהכרח. אפשר להתחיל בצורך ממוקד, כמו אתר או אוטומציה, ולתכנן איך הוא יתחבר בהמשך לשיווק ולשאר המערכת.'],
+  ['כבר יש לי אתר. מה כדאי לבדוק?', 'כדאי לבדוק אם ברור מה העסק מציע, אם נוח להשתמש באתר בנייד ואם הדרך לפנייה פשוטה. אלה נקודות פתיחה להחלטה מה לשפר ומה לשמור.'],
+  ['איך מגדירים תקציב ולוח זמנים?', 'היקף העבודה תלוי בעמודים, בתוכן, בעיצוב ובחיבורים הנדרשים. בשיחה נברר את הצרכים והאילוצים כדי לבסס הצעה שמתאימה לפרויקט, בלי לנחש מחיר או מועד מראש.'],
+] as const;
+
 function Actions() {
   return <div className={s.actions}>
     <Link href="/contact">קובעים שיחת היכרות ←</Link>
@@ -45,7 +52,12 @@ export default async function Home() {
       <div className={s.industries}>
         <p>מערכות דיגיטליות לעסקים שרוצים להתקדם</p>
         <div dir="ltr">STARTUPS · ECOMMERCE · REAL ESTATE · CLINICS · AND MORE</div>
-        <a href="#services">גללו לגלות ↓</a>
+        <nav className={s.explore} aria-label="ניווט בתוך דף הבית">
+          <a href="#services">השירותים שלנו <span aria-hidden>↓</span></a>
+          {project && <a href="#selected-work">פרויקט נבחר <span aria-hidden>↓</span></a>}
+          <a href="#process">איך עובדים <span aria-hidden>↓</span></a>
+          <a href="#questions">לפני שמתחילים <span aria-hidden>↓</span></a>
+        </nav>
       </div>
       <HomeFlow>
         <section id="services" className={s.services} aria-labelledby="services-title">
@@ -70,7 +82,7 @@ export default async function Home() {
         </section>
         <SystemStory />
         {project && (
-          <section className={s.work} data-flow="lift" aria-labelledby="work-title">
+          <section id="selected-work" className={s.work} data-flow="lift" aria-labelledby="work-title">
             <div>
               <p className={s.eyebrow}>SELECTED WORK</p>
               <h2 id="work-title">פרויקט נבחר.</h2>
@@ -83,11 +95,27 @@ export default async function Home() {
             </Link>
           </section>
         )}
-        <section className={s.process} aria-labelledby="process-title">
+        <section id="process" className={s.process} aria-labelledby="process-title">
           <div><p className={s.eyebrow}>FROM IDEA TO IMPACT</p><h2 id="process-title">תהליך<br />שמוביל<br />לתוצאות.</h2></div>
           <ol>{steps.map(([title, body], i) => (
             <li key={title} data-home-service><span>0{i + 1}</span><h3>{title}</h3><p>{body}</p></li>
           ))}</ol>
+        </section>
+        <section id="questions" className={s.questions} aria-labelledby="questions-title">
+          <div>
+            <p className={s.eyebrow}>A CLEAR NEXT STEP</p>
+            <h2 id="questions-title">לפני שמתחילים.<br />עושים סדר.</h2>
+            <p className={s.questionIntro}>לא צריך להגיע עם אפיון מוכן. מתחילים בשאלות הנכונות.</p>
+            <Link className={s.questionContact} href="/contact">נדבר על הפרויקט שלכם <span aria-hidden>←</span></Link>
+          </div>
+          <div className={s.answers}>
+            {questions.map(([question, answer], i) => (
+              <details key={question}>
+                <summary><span className={s.questionNumber} aria-hidden>0{i + 1}</span><span>{question}</span><span className={s.questionIcon} aria-hidden /></summary>
+                <p>{answer}</p>
+              </details>
+            ))}
+          </div>
         </section>
         <section className={s.final} data-flow="lift" aria-labelledby="final-title">
           <Image src="/brand/flowing-b.webp" width={320} height={320} alt="" sizes="(max-width:760px) 160px, 300px" />
