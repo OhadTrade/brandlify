@@ -1,49 +1,108 @@
 'use client';
 
-import type { ReactNode } from 'react';
-import { useGsapEffect } from '@/lib/animations/useGsapEffect';
+import { useEffect, useRef, type ReactNode } from 'react';
+import type { MaterialReveal } from './materialReveal';
+
+const DESKTOP = '(min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)';
 
 export function HeroExperience({ children, className }: { children: ReactNode; className?: string }) {
-  const ref = useGsapEffect<HTMLElement>((engine, mm, root) => {
-    const { gsap } = engine;
-    mm.add(engine.MQ_DESKTOP, () => {
-      const depth = root.querySelector('[data-hero-depth]');
-      if (!depth) return;
-      gsap.to(depth, {
-        yPercent: 12, rotate: 2, scale: 0.97, ease: 'none',
-        scrollTrigger: { trigger: root, start: 'top top', end: 'bottom top', scrub: 0.6 },
-      });
-    });
+  const ref = useRef<HTMLElement>(null);
 
-    mm.add('(min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)', () => {
-      const art = root.querySelector<HTMLElement>('[data-hero-tilt]');
-      if (!art) return;
-      const rotateX = gsap.quickTo(art, 'rotationX', { duration: 0.45, ease: 'power3.out' });
-      const rotateY = gsap.quickTo(art, 'rotationY', { duration: 0.45, ease: 'power3.out' });
-      const x = gsap.quickTo(art, 'x', { duration: 0.45, ease: 'power3.out' });
-      let bounds = root.getBoundingClientRect();
-      let measuredScrollY = window.scrollY;
-      const measure = () => { bounds = root.getBoundingClientRect(); measuredScrollY = window.scrollY; };
+  useEffect(() => {
+    const root = ref.current;
+    const depth = root?.querySelector<HTMLElement>('[data-hero-depth]');
+    const image = depth?.querySelector<HTMLImageElement>('img');
+    if (!root || !depth || !image) return;
+    const query = window.matchMedia(DESKTOP);
+    const device = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
+    let cleanup: (() => void) | undefined;
+
+    const configure = () => {
+      cleanup?.();
+      cleanup = undefined;
+      if (!query.matches || device.connection?.saveData || (device.deviceMemory ?? 8) < 4 || (device.hardwareConcurrency || 8) < 4) return;
+      let cancelled = false;
+      let reveal: MaterialReveal | undefined;
+      let context: { revert: () => void } | undefined;
+      let visible = false;
+      let failed = false;
+      let gl: WebGL2RenderingContext | null = null;
+      const bootAt = performance.now();
+      const canvas = document.createElement('canvas');
+      canvas.dataset.heroCanvas = '';
+      canvas.setAttribute('aria-hidden', 'true');
+      const fail = () => {
+        failed = true;
+        delete depth.dataset.materialReady;
+        canvas.remove();
+        reveal?.dispose();
+        if (!reveal) gl?.getExtension('WEBGL_lose_context')?.loseContext();
+        reveal = undefined;
+        context?.revert();
+        context = undefined;
+      };
+      const visibility = () => reveal?.setActive(visible && !document.hidden);
+      const observer = new IntersectionObserver(([entry]) => {
+        visible = !!entry?.isIntersecting;
+        visibility();
+        if (visible) void start();
+      });
+      let started = false;
+      const start = async () => {
+        if (started || cancelled) return;
+        started = true;
+        try {
+          // Probe before downloading Three; unsupported devices keep the SSR image.
+          gl = canvas.getContext('webgl2', { alpha: true, antialias: true, failIfMajorPerformanceCaveat: true, powerPreference: 'low-power' });
+          if (!gl) return;
+          const [material, engine] = await Promise.all([import('./materialReveal'), import('@/lib/animations/engine'), image.decode()]);
+          const source = new window.Image();
+          source.src = image.currentSrc || image.src;
+          await source.decode();
+          if (cancelled) { gl.getExtension('WEBGL_lose_context')?.loseContext(); return; }
+          depth.append(canvas);
+          // A late chunk must not hide a logo the visitor has already been reading.
+          reveal = material.createMaterialReveal(canvas, gl, source, fail, performance.now() - bootAt > 1200);
+          reveal.setActive(visible && !document.hidden);
+          context = engine.gsap.context(() => {
+            engine.gsap.to(depth, {
+              x: () => {
+                const brand = document.querySelector('[data-header-brand] img');
+                const box = brand?.getBoundingClientRect();
+                const own = depth.getBoundingClientRect();
+                return box ? box.left + box.width / 2 - own.left - own.width / 2 : -60;
+              },
+              y: -100, scale: 0.28, rotation: -7, opacity: 0, ease: 'none',
+              scrollTrigger: { trigger: root, start: 'top top', end: 'bottom top', scrub: 0.6, invalidateOnRefresh: true },
+            });
+          }, root);
+          if (failed) fail();
+        } catch { if (!cancelled) fail(); }
+      };
       const move = (event: PointerEvent) => {
         if (event.pointerType !== 'mouse') return;
-        const horizontal = Math.max(-1, Math.min(1, (event.clientX - bounds.left) / bounds.width * 2 - 1));
-        const vertical = Math.max(-1, Math.min(1, (event.clientY - bounds.top + window.scrollY - measuredScrollY) / bounds.height * 2 - 1));
-        rotateX(-vertical * 4);
-        rotateY(horizontal * 7);
-        x(horizontal * 10);
+        const bounds = root.getBoundingClientRect();
+        reveal?.point((event.clientX - bounds.left) / bounds.width * 2 - 1, (event.clientY - bounds.top) / bounds.height * 2 - 1);
       };
-      const reset = () => { rotateX(0); rotateY(0); x(0); };
-      root.addEventListener('pointerenter', measure);
-      root.addEventListener('pointermove', move);
+      const reset = () => reveal?.point(0, 0);
+      root.addEventListener('pointermove', move, { passive: true });
       root.addEventListener('pointerleave', reset);
-      window.addEventListener('resize', measure);
-      return () => {
-        root.removeEventListener('pointerenter', measure);
+      root.addEventListener('pointercancel', reset);
+      document.addEventListener('visibilitychange', visibility);
+      observer.observe(root);
+      cleanup = () => {
+        cancelled = true;
+        observer.disconnect();
+        document.removeEventListener('visibilitychange', visibility);
         root.removeEventListener('pointermove', move);
         root.removeEventListener('pointerleave', reset);
-        window.removeEventListener('resize', measure);
+        root.removeEventListener('pointercancel', reset);
+        fail();
       };
-    });
+    };
+    configure();
+    query.addEventListener('change', configure);
+    return () => { query.removeEventListener('change', configure); cleanup?.(); };
   }, []);
 
   return <section ref={ref} className={className} aria-labelledby="home-title">{children}</section>;
