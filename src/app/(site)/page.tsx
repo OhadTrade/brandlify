@@ -16,6 +16,14 @@ const steps = [
   ['עולים לאוויר ומשפרים', 'השקה, מדידה ואופטימיזציה לצמיחה.'],
 ];
 
+const serviceArtwork: Record<string, string> = {
+  websites: '/brand/services/websites-v1.webp',
+  branding: '/brand/services/branding-v1.webp',
+  marketing: '/brand/services/marketing-v1.webp',
+  seo: '/brand/services/seo-v1.webp',
+  automations: '/brand/services/automations-v1.webp',
+};
+
 const questions = [
   ['מאיפה מתחילים?', 'מהמטרה העסקית: מה אתם רוצים שהאתר יעזור להשיג, מי הקהל שלכם ומה כבר קיים היום. בשיחת ההיכרות נבחן את הצורך ונגדיר את הצעד הבא.'],
   ['צריך את כל השירותים כדי להתחיל?', 'לא בהכרח. אפשר להתחיל בצורך ממוקד, כמו אתר או אוטומציה, ולתכנן איך הוא יתחבר בהמשך לשיווק ולשאר המערכת.'],
@@ -69,11 +77,13 @@ export default async function Home() {
           <ul className={s.grid}>
             {services.map((service, i) => (
               <li key={service.slug} data-home-service>
-                <Link href={`/services/${service.slug}`}>
+                <Link href={`/services/${service.slug}`} data-service-card>
                   <span className={s.number}>0{i + 1}</span>
                   <h3>{service.title}</h3>
                   <p>{service.short_desc}</p>
-                  <div className={s.material} data-service-kind={service.slug} aria-hidden><i /><i /><b /></div>
+                  <div className={s.serviceArt} aria-hidden>
+                    <Image data-service-art src={serviceArtwork[service.slug] ?? '/brand/flowing-b.webp'} width={800} height={800} alt="" sizes="(max-width:480px) 88vw, (max-width:760px) 44vw, (max-width:1100px) 28vw, 18vw" />
+                  </div>
                   <span>גלו עוד ←</span>
                 </Link>
               </li>
