@@ -13,7 +13,7 @@ const links = [
 ] as const;
 
 function Brand() {
-  return <Link href="/" className={s.brand} aria-label="Brandlify - לעמוד הבית">
+  return <Link href="/" className={s.brand} data-header-brand aria-label="Brandlify - לעמוד הבית">
     <Image src="/brand/flowing-b.webp" width={40} height={40} alt="" />
     <span>BRANDLIFY</span>
   </Link>;
@@ -24,6 +24,14 @@ export function StudioChrome({ footer = false }: { footer?: boolean }) {
   const menu = useRef<HTMLDetailsElement>(null);
   const ref = useGsapEffect<HTMLDivElement>((engine, mm, root) => {
     if (footer) return;
+    mm.add('all', () => {
+      const updateScrolled = () => {
+        const next = window.scrollY > 48 ? 'true' : 'false';
+        if (root.dataset.scrolled !== next) root.dataset.scrolled = next;
+      };
+      engine.ScrollTrigger.create({ start: 48, end: 'max', onUpdate: updateScrolled, onRefresh: updateScrolled });
+      updateScrolled();
+    });
     const progress = root.querySelector('[data-page-progress]');
     mm.add(engine.MQ_MOTION_OK, () => {
       engine.gsap.fromTo(progress, { scaleX: 0 }, {
@@ -49,7 +57,7 @@ export function StudioChrome({ footer = false }: { footer?: boolean }) {
     <header className={s.header}>
       <Brand />
       <nav aria-label="ניווט ראשי">{navigation}</nav>
-      <Link className={s.cta} href="/contact">קובעים שיחת היכרות ←</Link>
+      <Link className={s.cta} href="/contact">בואו נדבר <span aria-hidden="true">←</span></Link>
       <details ref={menu} className={s.menu} onKeyDown={(event) => {
         if (event.key === 'Escape' && menu.current?.open) {
           menu.current.open = false;

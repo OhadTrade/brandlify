@@ -56,7 +56,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         eyebrow={service.title}
         title={service.title}
         lead={service.short_desc}
-        visual={<ServiceArtwork slug={service.slug} />}
+        visual={<ServiceArtwork slug={service.slug} priority />}
         crumbs={[
           { href: '/services', label: 'שירותים' },
           { href: `/services/${service.slug}`, label: service.title },

@@ -5,6 +5,7 @@ import { HeroExperience } from '@/components/home/HeroExperience';
 import { SystemStory } from '@/components/home/SystemStory';
 import { getServices, getPublishedProjects } from '@/lib/queries';
 import { whatsappUrl } from '@/lib/site';
+import { getServiceArtwork } from '@/lib/service-artwork';
 import s from '@/components/home/studio.module.css';
 
 export const revalidate = 300;
@@ -15,14 +16,6 @@ const steps = [
   ['מעצבים ובונים', 'עיצוב, פיתוח וחיבור בין המערכות.'],
   ['עולים לאוויר ומשפרים', 'השקה, מדידה ואופטימיזציה לצמיחה.'],
 ];
-
-const serviceArtwork: Record<string, string> = {
-  websites: '/brand/services/websites-v1.webp',
-  branding: '/brand/services/branding-v1.webp',
-  marketing: '/brand/services/marketing-v1.webp',
-  seo: '/brand/services/seo-v1.webp',
-  automations: '/brand/services/automations-v1.webp',
-};
 
 const questions = [
   ['מאיפה מתחילים?', 'מהמטרה העסקית: מה אתם רוצים שהאתר יעזור להשיג, מי הקהל שלכם ומה כבר קיים היום. בשיחת ההיכרות נבחן את הצורך ונגדיר את הצעד הבא.'],
@@ -45,26 +38,30 @@ export default async function Home() {
   return (
     <div className={s.studio}>
       <HeroExperience className={s.hero}>
-        <div>
-          <p className={s.eyebrow}>DIGITAL BUSINESS. BEYOND POSSIBLE.</p>
-          <h1 id="home-title">לא עוד אתר.<br /><span>מערכת דיגיטלית</span><br />שבונה את<br />העסק קדימה.</h1>
-          <p className={s.intro}>אתרים, שיווק, אוטומציות ופתרונות דיגיטליים.<br />הכל מחובר לצמיחה שלך.</p>
-          <Actions />
-        </div>
-        <div className={s.heroDepth} data-hero-depth>
-          <div className={s.heroTilt} data-hero-tilt>
-            <Image className={s.art} src="/brand/flowing-b.webp" width={1200} height={1200} priority sizes="(max-width:760px) 100vw, 52vw" alt="סימן Brandlify זורם מזכוכית וכרום בגווני קורל, ורוד וסגול" />
+        <div className={s.heroCopy}>
+          <p className={s.heroEyebrow}>סטודיו דיגיטלי לעסקים בצמיחה</p>
+          <h1 id="home-title">בונים לעסק<br /><span>מערכת דיגיטלית</span><br />שמביאה פניות.</h1>
+          <p className={s.intro}>אתר, מיתוג, שיווק ואוטומציות — מחוברים למערכת אחת ברורה, מהירה וקלה לתפעול.</p>
+          <div className={s.heroConversion}>
+            <div className={`${s.actions} ${s.heroActions}`}>
+              <Link href="/contact">קובעים שיחת היכרות <span aria-hidden="true">←</span></Link>
+              <Link href="/portfolio">צופים בעבודות <span aria-hidden="true">↙</span></Link>
+            </div>
+            <p className={s.heroReassurance}>שיחת היכרות קצרה · בלי התחייבות</p>
           </div>
+        </div>
+        <div className={s.heroDepth} data-hero-depth aria-hidden="true">
+            <Image className={s.art} src="/brand/flowing-b.webp" width={1200} height={1200} priority sizes="(max-width:760px) 260px, (max-width:1023px) 420px, (max-width:1440px) 45vw, 648px" alt="" />
         </div>
       </HeroExperience>
       <div className={s.industries}>
         <p>מערכות דיגיטליות לעסקים שרוצים להתקדם</p>
         <div dir="ltr">STARTUPS · ECOMMERCE · REAL ESTATE · CLINICS · AND MORE</div>
         <nav className={s.explore} aria-label="ניווט בתוך דף הבית">
-          <a href="#services">השירותים שלנו <span aria-hidden>↓</span></a>
-          {project && <a href="#selected-work">פרויקט נבחר <span aria-hidden>↓</span></a>}
-          <a href="#process">איך עובדים <span aria-hidden>↓</span></a>
-          <a href="#questions">לפני שמתחילים <span aria-hidden>↓</span></a>
+          <Link href="#services">השירותים שלנו <span aria-hidden>↓</span></Link>
+          {project && <Link href="#selected-work">פרויקט נבחר <span aria-hidden>↓</span></Link>}
+          <Link href="#process">איך עובדים <span aria-hidden>↓</span></Link>
+          <Link href="#questions">לפני שמתחילים <span aria-hidden>↓</span></Link>
         </nav>
       </div>
       <HomeFlow>
@@ -82,7 +79,7 @@ export default async function Home() {
                   <h3>{service.title}</h3>
                   <p>{service.short_desc}</p>
                   <div className={s.serviceArt} aria-hidden>
-                    <Image data-service-art src={serviceArtwork[service.slug] ?? '/brand/flowing-b.webp'} width={800} height={800} alt="" sizes="(max-width:480px) 88vw, (max-width:760px) 44vw, (max-width:1100px) 28vw, 18vw" />
+                    <Image data-service-art src={getServiceArtwork(service.slug)} width={800} height={800} alt="" sizes="(max-width:480px) 88vw, (max-width:760px) 44vw, (max-width:1100px) 28vw, 18vw" />
                   </div>
                   <span>גלו עוד ←</span>
                 </Link>
