@@ -55,6 +55,8 @@ export function SystemStory() {
         const target = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('[data-story-jump]') : null;
         if (!target) return;
         event.preventDefault();
+        // Preserve App Router history state, and only record deliberate jumps.
+        if (location.hash !== target.hash) window.history.pushState(window.history.state, '', target.hash);
         goTo(Number(target.dataset.storyJump));
       };
       // Tab must reveal a focused link even when its scene is off screen.
@@ -64,13 +66,27 @@ export function SystemStory() {
       };
       root.addEventListener('click', onClick);
       root.addEventListener('focusin', onFocus);
-      const refreshFrame = requestAnimationFrame(() => {
-        engine.ScrollTrigger.refresh();
+      let historyFrame = 0;
+      const restoreChapter = () => {
         const index = chapters.findIndex(chapter => location.hash === `#system-${chapter.id}`);
         if (index !== -1) goTo(index);
+      };
+      const onHistoryChange = () => {
+        cancelAnimationFrame(historyFrame);
+        // Run after native hash scrolling / history scroll restoration.
+        historyFrame = requestAnimationFrame(restoreChapter);
+      };
+      window.addEventListener('popstate', onHistoryChange);
+      window.addEventListener('hashchange', onHistoryChange);
+      const refreshFrame = requestAnimationFrame(() => {
+        engine.ScrollTrigger.refresh();
+        restoreChapter();
       });
       return () => {
         cancelAnimationFrame(refreshFrame);
+        cancelAnimationFrame(historyFrame);
+        window.removeEventListener('popstate', onHistoryChange);
+        window.removeEventListener('hashchange', onHistoryChange);
         root.removeEventListener('click', onClick);
         root.removeEventListener('focusin', onFocus);
         delete root.dataset.enhanced;
